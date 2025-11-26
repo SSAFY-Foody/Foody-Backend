@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.foody.user.mapper.UserMapper">
+
+	<insert id="save" parameterType="User">
+		INSERT INTO users (
+		id,
+		password,
+		name,
+		age,
+		email,
+		height,
+		weight,
+		gender,
+		activity_level,
+		is_diabetes,
+		role,
+		provider,
+		provider_id,
+		created_at
+		) VALUES (
+		#{id},
+		#{password},
+		#{name},
+		#{age},
+		#{email},
+		#{height},
+		#{weight},
+		#{gender},
+		#{activityLevel},
+		#{isDiabetes},
+		#{role},
+		#{provider},
+		#{providerId},
+		NOW()
+		)
+	</insert>
+
+	<update id="update" parameterType="User">
+		UPDATE users
+		<set>
+			<if test="name != null">name = #{name},</if>
+			<if test="password != null">password = #{password},</if>
+			<if test="age != 0">age = #{age},</if>
+			<if test="height != 0">height = #{height},</if>
+			<if test="weight != 0">weight = #{weight},</if>
+			<if test="gender != null">gender = #{gender},</if>
+			<if test="activityLevel != 0">activity_level = #{activityLevel},</if>
+			<if test="isDiabetes != null">is_diabetes = #{isDiabetes},</if>
+			<if test="role != null">role = #{role},</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+	<select id="findById" resultType="User">
+	SELECT
+	id, password, name as name, age, email, height, weight,
+	gender, activity_level, is_diabetes, role, provider, provider_id, created_at
+	FROM users
+	WHERE id = #{id}
+	</select>
+
+	<select id="findByProviderId" resultType="User">
+		SELECT
+		id, password, name as name, age, email, height, weight,
+		gender, activity_level, is_diabetes, role, provider, provider_id, created_at
+		FROM users
+		WHERE provider_id = #{providerId}
+	</select>
+
+	<select id="existsById" resultType="boolean">
+		SELECT EXISTS (SELECT 1 FROM users WHERE id = #{id})
+	</select>
+
+</mapper>
