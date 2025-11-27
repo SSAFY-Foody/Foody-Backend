@@ -40,6 +40,8 @@ public class SecurityConfig {
             
             // 요청 권한 설정 (requestMatchers 메서드 사용)
             .authorizeHttpRequests(auth -> auth
+            	// ▼▼▼ [수정] 여기에 "/food/**" 를 추가하세요! ▼▼▼
+                .requestMatchers("/food/**").permitAll()
             	// 주소 허용
                 .requestMatchers("/account/**", "/oauth2/**", "/login/**", "/favicon.ico").permitAll()
                 // 권한 필요
