@@ -1,4 +1,4 @@
-package com.ssafy.foody.global.auth.jwt;
+package com.ssafy.foody.common.auth.jwt;
 
 import java.security.Key;
 import java.util.Date;

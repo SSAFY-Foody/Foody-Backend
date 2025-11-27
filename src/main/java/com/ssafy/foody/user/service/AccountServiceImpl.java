@@ -4,7 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ssafy.foody.global.auth.jwt.JwtTokenProvider;
+import com.ssafy.foody.common.auth.jwt.JwtTokenProvider;
 import com.ssafy.foody.user.domain.User;
 import com.ssafy.foody.user.dto.LoginResponse;
 import com.ssafy.foody.user.dto.SignupRequest;

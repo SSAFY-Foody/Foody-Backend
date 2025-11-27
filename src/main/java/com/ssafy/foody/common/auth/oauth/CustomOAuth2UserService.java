@@ -1,4 +1,4 @@
-package com.ssafy.foody.global.auth.oauth;
+package com.ssafy.foody.common.auth.oauth;
 
 import java.util.Collections;
 import java.util.Map;
@@ -81,7 +81,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			userMapper.save(user);
 			log.info("소셜 회원가입 완료 (GUEST): {}", generatedId);
 		} else {
-			// [기존 회원] 로그 출력 정도만
+			// [기존 회원] 로그 출력 정도만          
 			log.info("소셜 로그인 성공: {}", user.getId());
 		}
 
