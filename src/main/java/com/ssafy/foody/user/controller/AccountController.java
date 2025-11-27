@@ -9,13 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.foody.global.auth.jwt.JwtTokenProvider;
-import com.ssafy.foody.user.domain.User;
 import com.ssafy.foody.user.dto.LoginRequest;
 import com.ssafy.foody.user.dto.LoginResponse;
 import com.ssafy.foody.user.dto.SignupRequest;
-import com.ssafy.foody.user.service.AccountServiceImpl;
-import com.ssafy.foody.user.service.UserServiceImpl;
+import com.ssafy.foody.user.service.AccountService;
+import com.ssafy.foody.user.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AccountController {
 
-    private final AccountServiceImpl accountService;
-    private final UserServiceImpl userService; // ID 중복 체크를 위해 필요
+    private final AccountService accountService;
+    private final UserService userService; // ID 중복 체크를 위해 필요
     
     // 회원가입
     @PostMapping("/signup")
