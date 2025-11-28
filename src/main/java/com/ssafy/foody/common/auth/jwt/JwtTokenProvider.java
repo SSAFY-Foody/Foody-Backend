@@ -32,6 +32,7 @@ public class JwtTokenProvider {
                 .setSubject(userPk) // id
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + VALID_TIME))
+                // HS256 (대칭키) - 같은 서버에서 생성과 검사를 하므로
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
