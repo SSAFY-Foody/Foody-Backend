@@ -32,7 +32,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		// 소셜 서비스에서 유저 정보 가져오기
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 
-		// 서비스(google) 확인
+		// 서비스 구분 (google, kakao)
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
 		// 유저 정보 추출
@@ -47,9 +47,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			providerId = String.valueOf(attributes.get("sub")); // 구글의 고유 ID
 			email = (String) attributes.get("email");
 			name = (String) attributes.get("name");
-		}
-		// 카카오 등 다른 소셜 추가 시 else if로 확장
+		} else if ("kakao".equals(registrationId)) {
+            // 카카오는 id가 숫자(Long)로 옴 -> String 변환
+            providerId = String.valueOf(attributes.get("id"));
+            
+            // 이메일과 닉네임은 'kakao_account'라는 Map 안에 있음
+            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+            Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
+            email = (String) kakaoAccount.get("email");
+            name = (String) profile.get("nickname");
+        }
+
+		log.info("로그인 시도 - Provider: {}, ID: {}", registrationId, providerId);
+		
 		// DB 저장 또는 조회
 		User user = saveOrUpdate(registrationId, providerId, email, name);
 
