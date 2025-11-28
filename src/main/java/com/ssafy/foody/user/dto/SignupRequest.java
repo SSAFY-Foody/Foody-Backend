@@ -21,7 +21,7 @@ public class SignupRequest {
 	private String password; // 비밀번호
 
 	@NotBlank(message = "이름은 필수입니다.")
-	@Pattern(regexp = "^[가-힣a-zA-Z]{1,10}$", message = "이름은 특수문자 제외 1~10자로 입력해주세요.")
+	@Size(max = 50, message = "이름은 50자 내로 입력해주세요.")
 	private String name;
 
 	@Min(value = 1, message = "나이는 1살 이상이어야 합니다.")
@@ -37,7 +37,7 @@ public class SignupRequest {
 	@Positive(message = "몸무게는 양수여야 합니다.")
 	private double weight;
 
-	@Pattern(regexp = "^[MF]$", message = "성별은 'M' 또는 'F'여야 합니다.")
+	@Pattern(regexp = "^[MF]$", message = "성별은 '남자' 또는 '여자'여야 합니다.")
 	private String gender;
 
 	@Min(value = 1, message = "활동량 레벨은 최소 1이어야 합니다.")

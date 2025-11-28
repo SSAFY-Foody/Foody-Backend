@@ -45,7 +45,7 @@ public class SecurityConfig {
 						// Swagger 관련 주소
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 						// 주소 허용
-						.requestMatchers("/account/**", "/oauth2/**", "/login/**", "/favicon.ico").permitAll()
+						.requestMatchers("/error/**", "/account/**", "/oauth2/**", "/login/**", "/favicon.ico").permitAll()
 						// 권한 필요
 						.anyRequest().authenticated())
 

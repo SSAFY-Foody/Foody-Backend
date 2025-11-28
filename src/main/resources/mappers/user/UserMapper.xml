@@ -55,23 +55,59 @@
 	</update>
 
 	<select id="findById" resultType="User">
-	SELECT
-	id, password, name as name, age, email, height, weight,
-	gender, activity_level, is_diabetes, role, provider, provider_id, created_at
-	FROM users
-	WHERE id = #{id}
+		SELECT
+		id, password, name as
+		name, age, email, height, weight,
+		gender, activity_level, is_diabetes,
+		role, provider, provider_id, created_at
+		FROM users
+		WHERE id = #{id}
 	</select>
 
 	<select id="findByProviderId" resultType="User">
 		SELECT
-		id, password, name as name, age, email, height, weight,
-		gender, activity_level, is_diabetes, role, provider, provider_id, created_at
+		id, password,
+		name as name, age, email, height, weight,
+		gender, activity_level,
+		is_diabetes, role, provider, provider_id, created_at
 		FROM users
-		WHERE provider_id = #{providerId}
+		WHERE
+		provider_id = #{providerId}
 	</select>
 
 	<select id="existsById" resultType="boolean">
-		SELECT EXISTS (SELECT 1 FROM users WHERE id = #{id})
+		SELECT EXISTS (SELECT 1 FROM
+		users WHERE id = #{id})
+	</select>
+
+	<insert id="insertStdInfo" parameterType="StdInfo">
+		INSERT INTO std_infos (
+		user_id,
+		std_weight,
+		std_kcal,
+		std_carb_g,
+		std_protein_g,
+		std_fat_g,
+		std_sugar_g,
+		std_natrium_g
+		) VALUES (
+		#{userId},
+		#{stdWeight},
+		#{stdKcal},
+		#{stdCarb},
+		#{stdProtein},
+		#{stdFat},
+		#{stdSugar},
+		#{stdNatrium}
+		)
+	</insert>
+
+	<select id="getActivityValue" parameterType="int" resultType="double">
+		SELECT
+		value
+		FROM activity_levels
+		WHERE
+		level = #{level}
 	</select>
 
 </mapper>
