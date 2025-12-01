@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ssafy.foody.food.mapper.FoodMapper">
-	<resultMap id="foodResultMap" type="food">
+    <resultMap id="foodResultMap" type="food">
 		<id column="code" property="code"/>
 		
 		<result column="name" property="name"/>
@@ -18,27 +18,26 @@
 		<result column="natrium_g" property="natrium"/>
 	</resultMap>
 	
+    <select id="selectFoodList" resultMap="foodResultMap">
+		SELECT 
+            code, name, category, standard, kcal,
+		    carb_g,
+		    protein_g,
+		    fat_g,
+		    sugar_g,
+		    natrium_g
+		FROM foods
+        
+        <where>
+            <if test="foodname != null and foodname != ''">
+                AND name LIKE CONCAT('%', #{foodname}, '%')
+            </if>
+        </where>
+        
+		ORDER BY name ASC
+		
+		LIMIT #{limit} OFFSET #{offset}
+		
+	</select>
 
-	<select id = "foodList" resultMap="foodResultMap">
-		select code, name, category, standard, kcal,
-		carb_g,
-		protein_g,
-		fat_g,
-		sugar_g,
-		natrium_g
-		from foods
-		order by name asc
-		limit #{limit} offset #{offset}
-	</select>
-	
-	<select id = "foodSearch" parameterType="String" resultMap="foodResultMap">
-		select code, name, category, standard, kcal,
-			carb_g,
-			protein_g,
-			fat_g,
-			sugar_g,
-			natrium_g
-			from foods
-			where name like concat ('%', #{name}, '%')
-	</select>
 </mapper>

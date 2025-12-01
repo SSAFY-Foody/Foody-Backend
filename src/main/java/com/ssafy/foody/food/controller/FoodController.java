@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nimbusds.oauth2.sdk.Response;
-import com.ssafy.foody.food.dto.FoodInfo;
+import com.ssafy.foody.food.dto.FoodResponse;
 import com.ssafy.foody.food.service.FoodService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,50 +24,23 @@ public class FoodController {
 	
 	private final FoodService foodService;
 	
-	// 음식 목록 조회 한 페이지당 50개로 설정
-	@GetMapping("/list")
-	public ResponseEntity<List<FoodInfo>> getFoodList (
-			@RequestParam(value = "page", defaultValue = "1") int page
-			){
-		
-		List<FoodInfo> list = foodService.foodList(page);
-//		log.debug("조회된 데이터 {} " ,list);
-//		log.debug("조호된 데이터 개수 {}",  list.size());
-		
-		//예외 처리 데이터 페이지 개수보다 더 많은 페이지를 요청한 경우
-		if(list ==null || list.isEmpty()) {
-			log.debug("요청한 페이지 ({})에 데이터가 없다", page);
-			return ResponseEntity.noContent().build(); //데이터 없으면 204 코드 반환
-		}
-		
-		
-		return ResponseEntity.ok(list);
-	}
-	
-	// 음식 검색 기능
-	@PostMapping("/search")
-	public ResponseEntity<List<FoodInfo>> searchFood (
-			@RequestParam(value = "foodname") String foodname
-			) {
-		
-		// 예외 처리 : 빈 문자열일 경우
-		if(foodname == null || foodname.trim().isEmpty()) {
-//			log.debug("빈 문자열 입니다 : {}" ,foodname);
-			return ResponseEntity.badRequest().build(); // 400 Bad Request
-		}
-		
-		
-		List<FoodInfo> list = foodService.foodSearch(foodname);
-//		log.debug("검색된 음식 {} ", list);
-		
-		//예외 처리 204
-		if(list == null || list.isEmpty()) {
-//			log.debug("검색된 음식이 없습니다: {}", foodname);
-			return ResponseEntity.noContent().build(); // 204 No Content(데이터 없음 에러 처리)
-		}
-		
-		log.debug("검색된 음식 {} 개", list.size());
-		return ResponseEntity.ok(list);
+	@GetMapping("/select")
+	public ResponseEntity<List<FoodResponse>> getFoodList(
+	        @RequestParam(value = "page", defaultValue = "1") int page,
+	        @RequestParam(value = "foodname", required = false) String foodname // 검색어가 없어도 동작하도록 설정
+	) {
+	    log.debug("조회된 음식 : {}", foodname);
+	    log.debug("조호된 페이지 : {}", page);
+	    // Service에 페이지 번호와 검색어(있다면)를 넘김
+	    List<FoodResponse> list = foodService.getFoodList(page, foodname);
+
+	    // 데이터가 없으면 204
+	    if (list == null || list.isEmpty()) {
+	        // 검색어가 있었는데 결과가 없는 경우와 그냥 데이터가 없는 경우 모두 포함
+	        return ResponseEntity.noContent().build();
+	    }
+
+	    return ResponseEntity.ok(list);
 	}
 		
 }
