@@ -3,25 +3,41 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ssafy.foody.food.mapper.FoodMapper">
-	<select id = "foodList" resultType="food">
+	<resultMap id="foodResultMap" type="food">
+		<id column="code" property="code"/>
+		
+		<result column="name" property="name"/>
+		<result column="category" property="category"/>
+		<result column="standard" property="standard"/>
+		<result column="kcal" property="kcal"/>
+		
+		<result column="carb_g" property="carb"/>
+		<result column="protein_g" property="protein"/>
+		<result column="fat_g" property="fat"/>
+		<result column="sugar_g" property="sugar"/>
+		<result column="natrium_g" property="natrium"/>
+	</resultMap>
+	
+
+	<select id = "foodList" resultMap="foodResultMap">
 		select code, name, category, standard, kcal,
-		carb_g carb,
-		protein_g protein,
-		fat_g fat,
-		sugar_g sugar,
-		natrium_g natrium
+		carb_g,
+		protein_g,
+		fat_g,
+		sugar_g,
+		natrium_g
 		from foods
 		order by name asc
 		limit #{limit} offset #{offset}
 	</select>
 	
-	<select id = "foodSearch" parameterType="String" resultType="food">
+	<select id = "foodSearch" parameterType="String" resultMap="foodResultMap">
 		select code, name, category, standard, kcal,
-			carb_g carb,
-			protein_g protein,
-			fat_g fat,
-			sugar_g sugar,
-			natrium_g natrium
+			carb_g,
+			protein_g,
+			fat_g,
+			sugar_g,
+			natrium_g
 			from foods
 			where name like concat ('%', #{name}, '%')
 	</select>
