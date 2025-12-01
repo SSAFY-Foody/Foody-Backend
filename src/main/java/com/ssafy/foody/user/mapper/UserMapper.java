@@ -12,7 +12,7 @@ public interface UserMapper {
 	void save(User user);
 
 	// 회원정보 수정
-	void update(User user);
+	void updateUser(User user);
 
 	// 소셜 ID로 조회
 	User findByProviderId(String providerId);
@@ -28,4 +28,7 @@ public interface UserMapper {
 	
 	// 활동 계수 조회
 	double getActivityValue(int level);
+	
+	// 표준 영양소 정보 수정
+	void updateStdInfo(StdInfo stdInfo);
 }

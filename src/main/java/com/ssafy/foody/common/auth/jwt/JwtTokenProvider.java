@@ -28,13 +28,19 @@ public class JwtTokenProvider {
     // 토큰 생성
     public String createToken(String userPk) {
         Date now = new Date();
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setSubject(userPk) // id
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + VALID_TIME))
                 // HS256 (대칭키) - 같은 서버에서 생성과 검사를 하므로
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+        
+        log.debug("#############################################");
+        log.debug("발급된 JWT 토큰: Bearer {}", token);
+        log.debug("#############################################");
+        
+        return token;
     }
 
     // 토큰에서 회원 정보 추출

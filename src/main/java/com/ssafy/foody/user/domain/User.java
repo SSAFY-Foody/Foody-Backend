@@ -22,7 +22,7 @@ public class User {
     private double weight;
     private String gender;
     private Integer activityLevel;			// 활동 계수
-    private boolean isDiabetes;			// 당뇨 여부
+    private Boolean isDiabetes;			// 당뇨 여부
     private String role;
     private String provider;
     private String providerId;

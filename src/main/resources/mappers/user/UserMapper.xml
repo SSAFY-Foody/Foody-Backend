@@ -38,7 +38,7 @@
 		)
 	</insert>
 
-	<update id="update" parameterType="User">
+	<update id="updateUser" parameterType="User">
 		UPDATE users
 		<set>
 			<if test="name != null">name = #{name},</if>
@@ -101,6 +101,20 @@
 		#{stdNatrium}
 		)
 	</insert>
+	
+	<update id="updateStdInfo" parameterType="StdInfo">
+        UPDATE std_infos
+        <set>
+            <if test="stdWeight != 0">std_weight = #{stdWeight},</if>
+            <if test="stdKcal != 0">std_kcal = #{stdKcal},</if>
+            <if test="stdCarb != 0">std_carb_g = #{stdCarb},</if>
+            <if test="stdProtein != 0">std_protein_g = #{stdProtein},</if>
+            <if test="stdFat != 0">std_fat_g = #{stdFat},</if>
+            <if test="stdSugar != 0">std_sugar_g = #{stdSugar},</if>
+            <if test="stdNatrium != 0">std_natrium_g = #{stdNatrium},</if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
 
 	<select id="getActivityValue" parameterType="int" resultType="double">
 		SELECT
