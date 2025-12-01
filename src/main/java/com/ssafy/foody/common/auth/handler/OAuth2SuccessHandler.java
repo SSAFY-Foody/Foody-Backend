@@ -56,10 +56,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         
         // JWT 토큰 생성 (Access Token)
         String token = jwtTokenProvider.createToken(dbUser.getId());
-        
-        log.debug("#############################################");
-        log.debug("발급된 JWT 토큰: Bearer {}", token);
-        log.debug("#############################################");
 
         // 프론트엔드로 리다이렉트 (토큰을 쿼리 파라미터로 전달)
         String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth/callback")
