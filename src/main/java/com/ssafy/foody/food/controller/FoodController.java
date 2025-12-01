@@ -24,15 +24,16 @@ public class FoodController {
 	
 	private final FoodService foodService;
 	
-	@GetMapping("/select")
+	@GetMapping("/")
 	public ResponseEntity<List<FoodResponse>> getFoodList(
 	        @RequestParam(value = "page", defaultValue = "1") int page,
-	        @RequestParam(value = "foodname", required = false) String foodname // 검색어가 없어도 동작하도록 설정
+	        @RequestParam(value = "keyWord", required = false) String keyWord, // 검색어가 없어도 동작하도록 설정
+	        @RequestParam(value = "category", required = false) String category // 카테고리
 	) {
-	    log.debug("조회된 음식 : {}", foodname);
+	    log.debug("조회된 음식 : {}", keyWord);
 	    log.debug("조호된 페이지 : {}", page);
 	    // Service에 페이지 번호와 검색어(있다면)를 넘김
-	    List<FoodResponse> list = foodService.getFoodList(page, foodname);
+	    List<FoodResponse> list = foodService.getFoodList(page, keyWord, category);
 
 	    // 데이터가 없으면 204
 	    if (list == null || list.isEmpty()) {
