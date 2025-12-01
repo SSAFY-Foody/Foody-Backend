@@ -41,7 +41,7 @@ public class SecurityConfig {
 				// 요청 권한 설정 (requestMatchers 메서드 사용)
 				.authorizeHttpRequests(auth -> auth
 						// food oauth 비활성화 코드
-//						.requestMatchers("/food/**").permitAll()
+						.requestMatchers("/food/**").permitAll()
 						// Swagger 관련 주소
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 						// 주소 허용

@@ -29,9 +29,12 @@
 		FROM foods
         
         <where>
-            <if test="foodname != null and foodname != ''">
-                AND name LIKE CONCAT('%', #{foodname}, '%')
+            <if test="keyWord != null and keyWord != ''">
+                AND name LIKE CONCAT('%', #{keyWord}, '%')
             </if>
+        	<if test="category != null and category != ''">
+        		AND category LIKE CONCAT('%', #{category}, '%')
+        	</if>
         </where>
         
 		ORDER BY name ASC

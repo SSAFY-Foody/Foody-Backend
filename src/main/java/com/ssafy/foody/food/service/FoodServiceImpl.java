@@ -23,20 +23,20 @@ public class FoodServiceImpl implements FoodService {
 	private static final int LIST_LIMIT = 50;
 	
 	@Override
-	public List<FoodResponse> getFoodList(int page, String foodname) {
+	public List<FoodResponse> getFoodList(int page, String keyWord, String category) {
 	    
 	    int offset = (page - 1) * LIST_LIMIT;
 	    
 	    //검색어가 null이 안될때에만
-	    if (foodname != null) {
-	        foodname = foodname.trim();
+	    if (keyWord != null) {
+	        keyWord = keyWord.trim();
 	        // 빈 문자열이면 그냥 전체 조회하도록 처리
-	        if (foodname.isEmpty()) {
-	            foodname = null;
+	        if (keyWord.isEmpty()) {
+	            keyWord = null;
 	        }
 	    }
 
-	    return foodMapper.selectFoodList(offset, LIST_LIMIT, foodname);
+	    return foodMapper.selectFoodList(offset, LIST_LIMIT, keyWord, category);
 	}
 
 }

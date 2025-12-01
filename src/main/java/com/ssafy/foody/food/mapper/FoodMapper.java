@@ -15,6 +15,7 @@ public interface FoodMapper {
     List<FoodResponse> selectFoodList(
         @Param("offset") int offset, 
         @Param("limit") int limit, 
-        @Param("foodname") String foodname
+        @Param("keyWord") String keyWord,
+        @Param("category") String category
     );
 }
