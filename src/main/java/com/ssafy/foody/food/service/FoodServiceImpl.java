@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.foody.food.domain.Food;
-import com.ssafy.foody.food.dto.FoodInfo;
+import com.ssafy.foody.food.dto.FoodResponse;
 import com.ssafy.foody.food.mapper.FoodMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -23,24 +23,20 @@ public class FoodServiceImpl implements FoodService {
 	private static final int LIST_LIMIT = 50;
 	
 	@Override
-	public List<FoodInfo> foodList(int page) {
-		if(page < 1) page = 1;
-		int offset = (page-1) * LIST_LIMIT;
-		
-		List<Food> voList = foodMapper.foodList(offset, LIST_LIMIT);
-		
-		return voList.stream().map(FoodInfo::new).collect(Collectors.toList());
-	}
-	
-	//음식 검색
-	@Override
-	public List<FoodInfo> foodSearch(String name) {
-		List<Food> food = foodMapper.foodSearch(name);
-		
-		if(food == null) {
-			return null;
-		}
-		return food.stream().map(FoodInfo::new).collect(Collectors.toList());
+	public List<FoodResponse> getFoodList(int page, String foodname) {
+	    
+	    int offset = (page - 1) * LIST_LIMIT;
+	    
+	    //검색어가 null이 안될때에만
+	    if (foodname != null) {
+	        foodname = foodname.trim();
+	        // 빈 문자열이면 그냥 전체 조회하도록 처리
+	        if (foodname.isEmpty()) {
+	            foodname = null;
+	        }
+	    }
+
+	    return foodMapper.selectFoodList(offset, LIST_LIMIT, foodname);
 	}
 
 }

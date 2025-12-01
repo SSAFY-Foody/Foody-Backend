@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FoodInfo {
+public class FoodResponse {
 	private String name; // 음식 이름
 	private String category;
 	private String standard;
@@ -20,7 +20,7 @@ public class FoodInfo {
 	private double sugar; //당
 	private double natrium;//나트륨 
 	
-	public FoodInfo(Food fo) {
+	public FoodResponse(Food fo) {
 		this.name = fo.getName();
 		this.category = fo.getCategory();
 		this.standard = fo.getStandard();
