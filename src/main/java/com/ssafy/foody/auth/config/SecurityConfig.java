@@ -1,4 +1,4 @@
-package com.ssafy.foody.common.config;
+package com.ssafy.foody.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,10 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.ssafy.foody.common.auth.handler.OAuth2SuccessHandler;
-import com.ssafy.foody.common.auth.jwt.JwtAuthenticationFilter;
-import com.ssafy.foody.common.auth.jwt.JwtTokenProvider;
-import com.ssafy.foody.common.auth.oauth.CustomOAuth2UserService;
+import com.ssafy.foody.auth.handler.OAuth2SuccessHandler;
+import com.ssafy.foody.auth.jwt.JwtAuthenticationFilter;
+import com.ssafy.foody.auth.jwt.JwtTokenProvider;
+import com.ssafy.foody.auth.oauth.CustomOAuth2UserService;
 import com.ssafy.foody.user.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;

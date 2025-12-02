@@ -1,4 +1,4 @@
-package com.ssafy.foody.common.auth.handler;
+package com.ssafy.foody.auth.handler;
 
 import java.io.IOException;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.ssafy.foody.common.auth.jwt.JwtTokenProvider;
+import com.ssafy.foody.auth.jwt.JwtTokenProvider;
 import com.ssafy.foody.user.domain.User;
 import com.ssafy.foody.user.mapper.UserMapper;
 
