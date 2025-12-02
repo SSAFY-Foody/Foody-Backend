@@ -1,4 +1,4 @@
-package com.ssafy.foody.common.auth.oauth;
+package com.ssafy.foody.auth.oauth;
 
 import java.util.Collections;
 import java.util.Map;
