@@ -47,7 +47,7 @@
 			<if test="height != 0">height = #{height},</if>
 			<if test="weight != 0">weight = #{weight},</if>
 			<if test="gender != null">gender = #{gender},</if>
-			<if test="activityLevel != 0">activity_level = #{activityLevel},</if>
+			<if test="activityLevel != null">activity_level = #{activityLevel},</if>
 			<if test="isDiabetes != null">is_diabetes = #{isDiabetes},</if>
 			<if test="role != null">role = #{role},</if>
 		</set>
