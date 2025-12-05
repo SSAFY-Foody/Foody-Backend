@@ -53,10 +53,10 @@
 		</set>
 		WHERE id = #{id}
 	</update>
-	
+
 	<delete id="deleteUser" parameterType="string">
-        DELETE FROM users WHERE id = #{id}
-    </delete>
+		DELETE FROM users WHERE id = #{id}
+	</delete>
 
 	<select id="findById" resultType="User">
 		SELECT
@@ -105,27 +105,85 @@
 		#{stdNatrium}
 		)
 	</insert>
-	
-	<update id="updateStdInfo" parameterType="StdInfo">
-        UPDATE std_infos
-        <set>
-            <if test="stdWeight != 0">std_weight = #{stdWeight},</if>
-            <if test="stdKcal != 0">std_kcal = #{stdKcal},</if>
-            <if test="stdCarb != 0">std_carb_g = #{stdCarb},</if>
-            <if test="stdProtein != 0">std_protein_g = #{stdProtein},</if>
-            <if test="stdFat != 0">std_fat_g = #{stdFat},</if>
-            <if test="stdSugar != 0">std_sugar_g = #{stdSugar},</if>
-            <if test="stdNatrium != 0">std_natrium_g = #{stdNatrium},</if>
-        </set>
-        WHERE user_id = #{userId}
-    </update>
 
-	<select id="getActivityValue" parameterType="int" resultType="double">
+	<update id="updateStdInfo" parameterType="StdInfo">
+		UPDATE std_infos
+		<set>
+			<if test="stdWeight != 0">std_weight = #{stdWeight},</if>
+			<if test="stdKcal != 0">std_kcal = #{stdKcal},</if>
+			<if test="stdCarb != 0">std_carb_g = #{stdCarb},</if>
+			<if test="stdProtein != 0">std_protein_g = #{stdProtein},</if>
+			<if test="stdFat != 0">std_fat_g = #{stdFat},</if>
+			<if test="stdSugar != 0">std_sugar_g = #{stdSugar},</if>
+			<if test="stdNatrium != 0">std_natrium_g = #{stdNatrium},</if>
+		</set>
+		WHERE user_id = #{userId}
+	</update>
+
+	<select id="getActivityValue" parameterType="int"
+		resultType="double">
 		SELECT
 		value
 		FROM activity_levels
 		WHERE
 		level = #{level}
+	</select>
+
+	<resultMap id="userWithStdInfoMap" type="User">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="age" column="age" />
+		<result property="email" column="email" />
+		<result property="height" column="height" />
+		<result property="weight" column="weight" />
+		<result property="gender" column="gender" />
+		<result property="activityLevel" column="activity_level" />
+		<result property="isDiabetes" column="is_diabetes" />
+		<result property="role" column="role" />
+		<result property="provider" column="provider" />
+		<result property="providerId" column="provider_id" />
+		<result property="createdAt" column="created_at" />
+		
+		<association property="stdInfo" javaType="StdInfo"
+			notNullColumn="std_kcal">
+			<id property="userId" column="user_id" />
+			<result property="stdWeight" column="std_weight" />
+			<result property="stdKcal" column="std_kcal" />
+			<result property="stdCarb" column="std_carb_g" />
+			<result property="stdProtein" column="std_protein_g" />
+			<result property="stdFat" column="std_fat_g" />
+			<result property="stdSugar" column="std_sugar_g" />
+			<result property="stdNatrium" column="std_natrium_g" />
+		</association>
+	</resultMap>
+
+	<!-- 표준 정보가 없더라도 가져오게끔 LEFT JOIN -->
+	<select id="findUserWithStdInfo" resultMap="userWithStdInfoMap">
+		SELECT
+		u.id,
+		u.password,
+		u.name,
+		u.age,
+		u.email,
+		u.height,
+		u.weight,
+		u.gender,
+		u.activity_level,
+		u.is_diabetes,
+		u.role,
+		u.provider,
+		u.provider_id,
+		u.created_at,
+		s.std_weight,
+		s.std_kcal,
+		s.std_carb_g,
+		s.std_protein_g,
+		s.std_fat_g,
+		s.std_sugar_g,
+		s.std_natrium_g
+		FROM users u
+		LEFT JOIN std_infos s ON u.id = s.user_id
+		WHERE u.id = #{userId}
 	</select>
 
 </mapper>

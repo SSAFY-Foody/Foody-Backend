@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.foody.report.mapper.ReportMapper">
+
+	<insert id="saveReport" parameterType="Report"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO reports (
+		user_id,
+		score,
+		comment,
+		character_id,
+		is_waited,
+
+		total_kcal, total_carb_g,
+		total_protein_g, total_fat_g, total_sugar_g,
+		total_natrium_g,
+
+		user_age,
+		user_height, user_weight, user_gender, user_activity_level,
+
+		user_std_weight, user_std_kcal, user_std_carb_g, user_std_protein_g,
+		user_std_fat_g, user_std_sugar_g, user_std_natrium_g,
+
+		created_at
+		)
+		VALUES (
+		#{userId},
+		#{score},
+		#{comment},
+		#{characterId},
+		#{isWaited},
+
+		#{totalKcal}, #{totalCarb}, #{totalProtein}, #{totalFat},
+		#{totalSugar},
+		#{totalNatrium},
+
+		#{userAge}, #{userHeight},
+		#{userWeight}, #{userGender}, #{userActivityLevel},
+
+		#{userStdWeight},
+		#{userStdKcal}, #{userStdCarb}, #{userStdProtein},
+		#{userStdFat},
+		#{userStdSugar}, #{userStdNatrium},
+
+		NOW()
+		)
+	</insert>
+
+	<insert id="saveMeal" parameterType="Meal"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO meals (
+		report_id,
+		meal_type, total_kcal,
+		total_carb_g, total_protein_g, total_fat_g,
+		total_sugar_g, total_natrium_g
+		) VALUES (
+		#{reportId}, #{mealType},
+		#{totalKcal},
+		#{totalCarb}, #{totalProtein}, #{totalFat},
+		#{totalSugar}, #{totalNatrium}
+		)
+	</insert>
+
+	<insert id="saveMealFood" parameterType="MealFood">
+		INSERT INTO meal_foods (
+		meal_id, food_code, user_food_code, eated_weight
+		) VALUES (
+		#{mealId},
+		#{foodCode}, 
+		#{userFoodCode},
+		#{eatedWeight}
+		)
+	</insert>
+
+	<update id="updateReportResult" parameterType="Report">
+		UPDATE reports
+		SET
+		score = #{score},
+		comment = #{comment},
+		character_id = #{characterId},
+		total_kcal = #{totalKcal},
+		total_carb_g = #{totalCarb},
+		total_protein_g = #{totalProtein},
+		total_fat_g = #{totalFat},
+		total_sugar_g = #{totalSugar},
+		total_natrium_g = #{totalNatrium}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateMeal" parameterType="Meal">
+		UPDATE meals
+		SET
+		total_kcal = #{totalKcal},
+		total_carb_g = #{totalCarb},
+		total_protein_g = #{totalProtein},
+		total_fat_g = #{totalFat},
+		total_sugar_g = #{totalSugar},
+		total_natrium_g = #{totalNatrium}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

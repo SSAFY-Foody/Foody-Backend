@@ -35,4 +35,6 @@ public interface UserMapper {
 	// 활동 계수 조회
 	double getActivityValue(int level);
 	
+	// 유저 정보 + 표준 정보(StdInfo) 조인 조회
+    User findUserWithStdInfo(String userId);
 }
