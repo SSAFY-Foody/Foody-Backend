@@ -257,6 +257,25 @@ public class ReportServiceImpl implements ReportService {
 
         return report;
     }
+	
+	@Override
+    @Transactional
+    public void deleteReport(String userId, int reportId) {
+        // 레포트 생성 유저 확인
+        String reportUserId = reportMapper.findUserIdById(reportId);
+        
+        if (reportUserId == null) {
+            throw new IllegalArgumentException("해당 레포트가 존재하지 않습니다.");
+        }
+
+        // 소유자 확인 (내 리포트만 삭제 가능)
+        if (!reportUserId.equals(userId)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+
+        // 삭제 실행
+        reportMapper.deleteReport(reportId);
+    }
 
 	// 헬퍼 메서드: DB의 standard 문자열("100g", "200ml")에서 숫자만 추출
 	private double parseStandard(String standard) {

@@ -16,4 +16,7 @@ public interface ReportService {
     
     // 상세 조회
     Report getReportDetail(String userId, int reportId);
+    
+    // 삭제
+    void deleteReport(String userId, int reportId);
 }

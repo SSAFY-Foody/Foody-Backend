@@ -39,4 +39,10 @@ public interface ReportMapper {
     
     // 레포트 상세 조회
     Report selectReportDetail(@Param("reportId") int reportId);
+    
+    // 작성자 조회 (권한 확인용)
+    String findUserIdById(int id);
+
+    // 삭제
+    void deleteReport(int id);
 }

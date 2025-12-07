@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,5 +80,21 @@ public class ReportController {
         Report report = reportService.getReportDetail(userId, reportId);
         
         return ResponseEntity.ok(report);
+    }
+    
+    /**
+     * 레포트 삭제
+     * DELETE /report/{reportId}
+     */
+    @DeleteMapping("/{reportId}")
+    public ResponseEntity<String> deleteReport(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable int reportId
+    ) {
+        String userId = userDetails.getUsername();
+        
+        reportService.deleteReport(userId, reportId);
+        
+        return ResponseEntity.ok("레포트가 삭제되었습니다.");
     }
 }

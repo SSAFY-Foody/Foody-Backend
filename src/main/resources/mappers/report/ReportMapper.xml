@@ -197,5 +197,15 @@
 		total_natrium_g = #{totalNatrium}
 		WHERE id = #{id}
 	</update>
+	
+	<select id="findUserIdById" resultType="string">
+        SELECT user_id 
+        FROM reports 
+        WHERE id = #{id}
+    </select>
+
+    <delete id="deleteReport">
+        DELETE FROM reports WHERE id = #{id}
+    </delete>
 
 </mapper>
