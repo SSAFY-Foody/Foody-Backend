@@ -62,6 +62,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     // 로그인
+    @Transactional(readOnly = true)
     public LoginResponse authenticate(String id, String rawPassword) {
         // 유저 조회
         User user = userMapper.findById(id);
@@ -92,6 +93,7 @@ public class AccountServiceImpl implements AccountService {
     }
     
     // ID 중복 체크
+    @Transactional(readOnly = true)
     public boolean isIdDuplicate(String id) {
         return userMapper.existsById(id);
     }

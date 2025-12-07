@@ -1,11 +1,10 @@
 package com.ssafy.foody.food.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.ssafy.foody.food.domain.Food;
 import com.ssafy.foody.food.dto.FoodResponse;
 import com.ssafy.foody.food.mapper.FoodMapper;
 
@@ -23,6 +22,7 @@ public class FoodServiceImpl implements FoodService {
 	private static final int LIST_LIMIT = 50;
 	
 	@Override
+	@Transactional(readOnly = true)
 	public List<FoodResponse> getFoodList(int page, String keyword, String category) {
 	    
 	    int offset = (page - 1) * LIST_LIMIT;

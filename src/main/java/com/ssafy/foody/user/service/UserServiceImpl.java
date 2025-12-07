@@ -16,18 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
     private final StdInfoCalculator stdInfoCalculator;
 
-    // ID 중복 체크
-    public boolean isIdDuplicate(String id) {
-        return userMapper.existsById(id);
-    }
-
     // 내 정보 조회 (ID로 찾기)
+    @Transactional(readOnly = true)
     public UserResponse findById(String userId) {
         User user = userMapper.findById(userId);
         if (user == null) {
