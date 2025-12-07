@@ -43,9 +43,9 @@
 		<set>
 			<if test="name != null">name = #{name},</if>
 			<if test="password != null">password = #{password},</if>
-			<if test="age != 0">age = #{age},</if>
-			<if test="height != 0">height = #{height},</if>
-			<if test="weight != 0">weight = #{weight},</if>
+			<if test="age != null">age = #{age},</if>
+			<if test="height != null">height = #{height},</if>
+			<if test="weight != null">weight = #{weight},</if>
 			<if test="gender != null">gender = #{gender},</if>
 			<if test="activityLevel != null">activity_level = #{activityLevel},</if>
 			<if test="isDiabetes != null">is_diabetes = #{isDiabetes},</if>
@@ -53,6 +53,12 @@
 		</set>
 		WHERE id = #{id}
 	</update>
+	
+	<update id="updateRole">
+        UPDATE users
+        SET role = #{role}
+        WHERE id = #{id}
+    </update>
 
 	<delete id="deleteUser" parameterType="string">
 		DELETE FROM users WHERE id = #{id}

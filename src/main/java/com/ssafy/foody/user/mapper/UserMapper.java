@@ -1,6 +1,7 @@
 package com.ssafy.foody.user.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.ssafy.foody.user.domain.StdInfo;
 import com.ssafy.foody.user.domain.User;
@@ -37,4 +38,7 @@ public interface UserMapper {
 	
 	// 유저 정보 + 표준 정보(StdInfo) 조인 조회
     User findUserWithStdInfo(String userId);
+    
+    // 권한 수정
+    void updateRole(@Param("id") String id, @Param("role") String role);
 }
