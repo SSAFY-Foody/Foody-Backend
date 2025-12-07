@@ -1,6 +1,11 @@
 package com.ssafy.foody.report.mapper;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import com.ssafy.foody.report.domain.Meal;
 import com.ssafy.foody.report.domain.MealFood;
 import com.ssafy.foody.report.domain.Report;
@@ -22,4 +27,16 @@ public interface ReportMapper {
     
     // 끼니 업데이트
     void updateMeal(Meal meal);
+    
+    // 레포트 목록 조회
+    List<Report> selectReportList(
+        @Param("userId") String userId,
+        @Param("offset") int offset,
+        @Param("limit") int limit,
+        @Param("startDate") LocalDate startDate, 
+        @Param("endDate") LocalDate endDate
+    );
+    
+    // 레포트 상세 조회
+    Report selectReportDetail(@Param("reportId") int reportId);
 }

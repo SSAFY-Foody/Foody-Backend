@@ -1,5 +1,8 @@
 package com.ssafy.foody.report.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,9 @@ public class ReportServiceImpl implements ReportService {
 	private final UserMapper userMapper;
 	private final FoodMapper foodMapper;
 	private final ReportMapper reportMapper;
+	
+	// 한 페이지당 보여줄 개수 정의
+	private static final int LIST_LIMIT = 10;
 
 	@Override
 	@Transactional
@@ -164,7 +170,7 @@ public class ReportServiceImpl implements ReportService {
 
 						// MealFood 저장
 						MealFood mealFood = MealFood.builder().mealId(meal.getId()).foodCode(dbFoodCode)
-								.userFoodCode(userFoodCode).name(item.getName()).eatedWeight(item.getEatedWeight())
+								.userFoodCode(userFoodCode).eatedWeight(item.getEatedWeight())
 								.build();
 						reportMapper.saveMealFood(mealFood);
 					}
@@ -223,6 +229,34 @@ public class ReportServiceImpl implements ReportService {
 
 		reportMapper.updateReportResult(report); // 최종 저장
 	}
+	
+	@Override
+    @Transactional(readOnly = true) // 조회 전용
+    public List<Report> getReportList(String userId, int page, LocalDate startDate, LocalDate endDate) {
+		int offset = (page - 1) * LIST_LIMIT;
+		
+        return reportMapper.selectReportList(userId, offset, LIST_LIMIT, startDate, endDate);
+    }
+	
+	@Override
+    @Transactional(readOnly = true)
+    public Report getReportDetail(String userId, int reportId) {
+        // 레포트 정보 가져오기
+        Report report = reportMapper.selectReportDetail(reportId);
+
+        // 레포트가 존재하는지 확인
+        if (report == null) {
+            throw new IllegalArgumentException("해당 레포트를 찾을 수 없습니다.");
+        }
+
+        // 내 리포트가 맞는지 확인 (IDOR 방지)
+        // IDOR (Insecure Direct Object References, 부적절한 인가)
+        if (!report.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("해당 레포트에 대한 접근 권한이 없습니다.");
+        }
+
+        return report;
+    }
 
 	// 헬퍼 메서드: DB의 standard 문자열("100g", "200ml")에서 숫자만 추출
 	private double parseStandard(String standard) {

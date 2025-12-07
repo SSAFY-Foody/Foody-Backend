@@ -4,6 +4,103 @@
 
 <mapper namespace="com.ssafy.foody.report.mapper.ReportMapper">
 
+	<resultMap id="reportDetailMap" type="Report">
+        <id property="id" column="report_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="score" column="score"/>
+        <result property="comment" column="comment"/>
+        <result property="isWaited" column="is_waited"/>
+        <result property="characterId" column="character_id"/>
+        <result property="createdAt" column="created_at"/>
+        
+        <result property="userAge" column="user_age" />
+		<result property="userHeight" column="user_height" />
+		<result property="userWeight" column="user_weight" />
+		<result property="userGender" column="user_gender" />
+		<result property="userActivityLevel" column="user_activity_level" />
+        
+        <result property="userStdWeight" column="user_std_weight"/>
+        <result property="userStdKcal" column="user_std_kcal"/>
+        <result property="userStdCarb" column="user_std_carb_g"/>
+        <result property="userStdProtein" column="user_std_protein_g"/>
+        <result property="userStdFat" column="user_std_fat_g"/>
+        <result property="userStdSugar" column="user_std_sugar_g"/>
+        <result property="userStdNatrium" column="user_std_natrium_g"/>
+        
+        <result property="totalKcal" column="r_total_kcal"/>
+        <result property="totalCarb" column="r_total_carb_g"/>
+        <result property="totalProtein" column="r_total_protein_g"/>
+        <result property="totalFat" column="r_total_fat_g"/>
+        <result property="totalSugar" column="r_total_sugar_g"/>
+        <result property="totalNatrium" column="r_total_natrium_g"/>
+        
+        
+        <collection property="meals" ofType="Meal">
+            <id property="id" column="meal_id"/>
+            <result property="reportId" column="report_id"/>
+            <result property="mealType" column="meal_type"/>
+            <result property="totalKcal" column="m_total_kcal"/>
+            <result property="totalCarb" column="m_total_carb_g"/>
+            <result property="totalProtein" column="m_total_protein_g"/>
+            <result property="totalFat" column="m_total_fat_g"/>
+            <result property="totalSugar" column="m_total_sugar_g"/>
+            <result property="totalNatrium" column="m_total_natrium_g"/>
+            
+            <collection property="mealFoods" ofType="MealFood">
+                <id property="id" column="meal_food_id"/>
+                <result property="mealId" column="meal_id"/>
+                <result property="foodCode" column="food_code"/>
+                <result property="userFoodCode" column="user_food_code"/>
+                <result property="eatedWeight" column="eated_weight"/>
+            </collection>
+        </collection>
+    </resultMap>
+    
+    <select id="selectReportList" resultType="Report">
+        SELECT 
+            id, 
+            user_id, score, comment, is_waited, character_id, created_at,
+            total_kcal, total_carb_g, total_protein_g, 
+            total_fat_g, total_sugar_g, total_natrium_g
+        FROM reports
+        WHERE user_id = #{userId}
+        
+        <if test="startDate != null">
+            AND created_at >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND created_at <![CDATA[ < ]]> DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+        </if>
+        
+        ORDER BY created_at DESC
+        
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <select id="selectReportDetail" resultMap="reportDetailMap">
+        SELECT 
+            r.id AS report_id, r.user_id, r.score, r.comment, r.is_waited, r.character_id, r.created_at,
+            r.user_age, r.user_height, r.user_weight, r.user_gender, r.user_activity_level,
+            r.user_std_weight, r.user_std_kcal, r.user_std_carb_g, r.user_std_protein_g,
+            r.user_std_fat_g, r.user_std_sugar_g, r.user_std_natrium_g,
+            r.total_kcal AS r_total_kcal, r.total_carb_g AS r_total_carb_g, 
+            r.total_protein_g AS r_total_protein_g, r.total_fat_g AS r_total_fat_g, 
+            r.total_sugar_g AS r_total_sugar_g, r.total_natrium_g AS r_total_natrium_g,
+            
+            m.id AS meal_id, m.meal_type,
+            m.total_kcal AS m_total_kcal, m.total_carb_g AS m_total_carb_g, 
+            m.total_protein_g AS m_total_protein_g, m.total_fat_g AS m_total_fat_g, 
+            m.total_sugar_g AS m_total_sugar_g, m.total_natrium_g AS m_total_natrium_g,
+            
+            mf.id AS meal_food_id, mf.food_code, mf.user_food_code, mf.eated_weight
+            
+        FROM reports r
+        LEFT JOIN meals m ON r.id = m.report_id
+        LEFT JOIN meal_foods mf ON m.id = mf.meal_id
+        WHERE r.id = #{reportId}
+        
+    </select>
+
 	<insert id="saveReport" parameterType="Report"
 		useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO reports (
