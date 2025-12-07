@@ -57,11 +57,37 @@ public class UserServiceImpl implements UserService {
         
         // users 테이블 업데이트
         userMapper.updateUser(user);
+        
+        // GUEST -> USER 심사 로직
+        // 현재 권한이 GUEST인지 확인
+        if ("ROLE_GUEST".equals(user.getRole())) {
+            log.info("GUEST 유저입니다. 기본 정보 검사 - userId: {}", userId);
 
-        // 표준 영양소 재계산 및 DB 업데이트
-        StdInfo stdInfo = stdInfoCalculator.calculate(user);
-        if (stdInfo != null) {
-            userMapper.updateStdInfo(stdInfo);
+            // 기본 정보가 모두 있는 지 검사
+            if (checkBasicInfo(user)) {
+                
+                // 표준 정보(StdInfo)를 계산 및 DB 생성
+                StdInfo stdInfo = stdInfoCalculator.calculate(user);
+                if (stdInfo != null) {
+                    userMapper.insertStdInfo(stdInfo);
+                }
+            	
+                // 권한을 USER로 변경
+                user.setRole("ROLE_USER");
+                
+                // 변경된 권한 DB에 저장
+                userMapper.updateRole(user.getId(), "ROLE_USER"); 
+                
+                log.info("유저 권한 수정 완료 ROLE_GUEST -> ROLE_USER - userId: {}", userId);
+            } else {
+                log.info("아직 필수 정보가 부족하여 GUEST 상태 유지 - userId: {}", userId);
+            }
+        } else {
+	        // 표준 영양소 재계산 및 DB 업데이트
+	        StdInfo stdInfo = stdInfoCalculator.calculate(user);
+	        if (stdInfo != null) {
+	            userMapper.updateStdInfo(stdInfo);
+	        }
         }
     }
     
@@ -76,4 +102,18 @@ public class UserServiceImpl implements UserService {
         // 유저 삭제
 		userMapper.deleteUser(userId);
 	}
+    
+    /**
+     * 필수 정보(나이, 키, 몸무게, 성별, 활동량)가 모두 입력되었는지 확인
+     */
+    private boolean checkBasicInfo(User user) {
+        // 신체 정보가 모두 있는지 확인 (0이나 null이 아니어야 함)
+        boolean hasBasicInfo = 
+                user.getAge() != null && user.getAge() > 0 &&
+                user.getHeight() != null && user.getHeight() > 0 &&
+                user.getWeight() != null && user.getWeight() > 0 &&
+                user.getGender() != null && !user.getGender().isEmpty() &&
+                user.getActivityLevel() != null && user.getActivityLevel() > 0;
+        return hasBasicInfo;
+    }
 }

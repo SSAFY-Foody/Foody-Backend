@@ -16,10 +16,10 @@ public class User {
     private String id;
     private String password;
     private String name;
-    private int age;
+    private Integer age;
     private String email;
-    private double height;
-    private double weight;
+    private Double height;
+    private Double weight;
     private String gender;
     private Integer activityLevel;			// 활동 계수
     private Boolean isDiabetes;			// 당뇨 여부
