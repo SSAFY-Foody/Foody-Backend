@@ -2,14 +2,16 @@ package com.ssafy.foody.food.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.nimbusds.oauth2.sdk.Response;
+import com.ssafy.foody.food.dto.AiFoodResponse;
 import com.ssafy.foody.food.dto.FoodResponse;
 import com.ssafy.foody.food.service.FoodService;
 
@@ -43,5 +45,21 @@ public class FoodController {
 
 	    return ResponseEntity.ok(list);
 	}
+	
+	/**
+     * 음식 이미지 분석 요청
+     * POST /food/analyze
+     * form-data key: "image" (파일)
+     */
+    @PostMapping(value = "/analyze", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AiFoodResponse> analyzeFoodImage(
+            @RequestParam("image") MultipartFile image
+    ) {
+        log.info("이미지 분석 요청 받음: {}", image.getOriginalFilename());
+        
+        AiFoodResponse result = foodService.analyzeImage(image);
+        
+        return ResponseEntity.ok(result);
+    }
 		
 }
