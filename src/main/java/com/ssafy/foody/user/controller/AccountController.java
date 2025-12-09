@@ -13,7 +13,6 @@ import com.ssafy.foody.user.dto.LoginRequest;
 import com.ssafy.foody.user.dto.LoginResponse;
 import com.ssafy.foody.user.dto.SignupRequest;
 import com.ssafy.foody.user.service.AccountService;
-import com.ssafy.foody.user.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +51,14 @@ public class AccountController {
     public ResponseEntity<Boolean> checkId(@RequestParam String id) {
         boolean exists = accountService.isIdDuplicate(id);
         return ResponseEntity.ok(exists); 
+    }
+    
+    /**
+     * 로그아웃
+     * 리프레쉬 토큰이 없으므로, 서버에선 할 일 X (리프레쉬 토큰 도입 시 수정 필요)
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        return ResponseEntity.ok("로그아웃 되었습니다.");
     }
 }
