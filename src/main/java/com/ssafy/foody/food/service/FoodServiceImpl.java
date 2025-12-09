@@ -34,10 +34,14 @@ public class FoodServiceImpl implements FoodService {
 	// 한 페이지당 보여줄 개수 정의
 	private static final int LIST_LIMIT = 50;
 	
-	// AI 서버 URL
+	// AI 서버 BASE URL
 	@Value("${ai.server.base.url}")
     private String aiServerBaseUrl;
 	
+	// VLM 서버 port
+	@Value("${ai.vlm.server.port}")
+    private String vlmServerPort;
+		
 	@Override
 	@Transactional(readOnly = true)
 	public List<FoodResponse> getFoodList(int page, String keyword, String category) {
@@ -84,7 +88,7 @@ public class FoodServiceImpl implements FoodService {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             // 이미지 분석 엔드포인트
-            String analyzeImageURL = aiServerBaseUrl + "/food";
+            String analyzeImageURL = String.format("%s:%s/api/vlm/food", aiServerBaseUrl, vlmServerPort);
             
             // POST 요청 전송
             log.info("AI 서버로 이미지 분석 요청 전송: {}", analyzeImageURL);
