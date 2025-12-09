@@ -41,7 +41,7 @@ public class ReportRequest {
         private String name;     // 음식 이름
         
         @Positive(message = "먹은 중량은 0보다 커야 합니다.")
-        private double eatedWeight; // 먹은 중량
+        private double eatenWeight; // 먹은 중량
         
         // --- 영양소 정보 (사용자 입력 시에만 사용) ---
         @Positive(message = "기준 중량은 0이상이어야 합니다.")

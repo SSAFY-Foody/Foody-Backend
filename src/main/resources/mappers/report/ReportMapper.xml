@@ -51,7 +51,7 @@
                 <result property="mealId" column="meal_id"/>
                 <result property="foodCode" column="food_code"/>
                 <result property="userFoodCode" column="user_food_code"/>
-                <result property="eatedWeight" column="eated_weight"/>
+                <result property="eatenWeight" column="eaten_weight"/>
             </collection>
         </collection>
     </resultMap>
@@ -92,7 +92,7 @@
             m.total_protein_g AS m_total_protein_g, m.total_fat_g AS m_total_fat_g, 
             m.total_sugar_g AS m_total_sugar_g, m.total_natrium_g AS m_total_natrium_g,
             
-            mf.id AS meal_food_id, mf.food_code, mf.user_food_code, mf.eated_weight
+            mf.id AS meal_food_id, mf.food_code, mf.user_food_code, mf.eaten_weight
             
         FROM reports r
         LEFT JOIN meals m ON r.id = m.report_id
@@ -162,12 +162,12 @@
 
 	<insert id="saveMealFood" parameterType="MealFood">
 		INSERT INTO meal_foods (
-		meal_id, food_code, user_food_code, eated_weight
+		meal_id, food_code, user_food_code, eaten_weight
 		) VALUES (
 		#{mealId},
 		#{foodCode}, 
 		#{userFoodCode},
-		#{eatedWeight}
+		#{eatenWeight}
 		)
 	</insert>
 

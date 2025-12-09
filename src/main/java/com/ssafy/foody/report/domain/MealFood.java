@@ -17,6 +17,6 @@ public class MealFood {
     private String foodCode;    // DB 음식 코드
     private Integer userFoodCode; // 사용자 입력 음식 코드
     
-    private double eatedWeight;    // 먹은 양
+    private double eatenWeight;    // 먹은 양
     
 }
