@@ -12,6 +12,4 @@ public interface FoodService {
 	//	음식 리스트 조회 (페이지 넘기기) )
 	List<FoodResponse> getFoodList(int page, String keyword, String category);
 	
-	// 이미지 분석 요청
-    AiFoodResponse analyzeImage(MultipartFile image);
 }

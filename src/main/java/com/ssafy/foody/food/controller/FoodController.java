@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.foody.food.dto.AiFoodResponse;
 import com.ssafy.foody.food.dto.FoodResponse;
+import com.ssafy.foody.food.service.FoodAiService;
 import com.ssafy.foody.food.service.FoodService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FoodController {
 	
 	private final FoodService foodService;
+	private final FoodAiService foodAiService;
 	
 	@GetMapping("/")
 	public ResponseEntity<List<FoodResponse>> getFoodList(
@@ -57,7 +59,7 @@ public class FoodController {
     ) {
         log.info("이미지 분석 요청 받음: {}", image.getOriginalFilename());
         
-        AiFoodResponse result = foodService.analyzeImage(image);
+        AiFoodResponse result = foodAiService.analyzeImage(image);
         
         return ResponseEntity.ok(result);
     }
