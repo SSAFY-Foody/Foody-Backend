@@ -4,15 +4,12 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ssafy.foody.food.dto.AiFoodResponse;
 
@@ -24,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AiFoodServiceImpl implements AiFoodService {
 	
-	private final RestTemplate restTemplate;
+	private final WebClient webClient;
 	
 	// AI 서버 BASE URL
 	@Value("${ai.server.base.url}")
@@ -39,41 +36,34 @@ public class AiFoodServiceImpl implements AiFoodService {
         if (image.isEmpty()) {
             throw new IllegalArgumentException("이미지 파일이 비어있습니다.");
         }
+        
+        String analyzeImageURL = String.format("%s:%s/api/vlm/food", aiServerBaseUrl, vlmServerPort);
+        log.debug("AI 서버로 이미지 분석 요청 전송: {}", analyzeImageURL);
 
         try {
-        	// 헤더 설정
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-            // 바디 설정 (파일 데이터 담기)
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        	// Multipart Body 생성 (WebClient 전용 빌더 사용)
+            MultipartBodyBuilder builder = new MultipartBodyBuilder();
             
-            // MultipartFile을 ByteArrayResource로 변환하여 전송
-            ByteArrayResource resource = new ByteArrayResource(image.getBytes()) {
+            // 파일 추가 (파일명 유지를 위해 ByteArrayResource 트릭 사용)
+            builder.part("image", new ByteArrayResource(image.getBytes()) {
                 @Override
                 public String getFilename() {
                     return image.getOriginalFilename();
                 }
-            };
-            
-            body.add("image", resource);
+            });
 
-            // 요청 엔티티 생성
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            // WebClient 요청 전송
+            AiFoodResponse response = webClient.post()
+                    .uri(analyzeImageURL)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(BodyInserters.fromMultipartData(builder.build()))
+                    .retrieve()
+                    .bodyToMono(AiFoodResponse.class)
+                    .block(); // 동기 처리
 
-            // 이미지 분석 엔드포인트
-            String analyzeImageURL = String.format("%s:%s/api/vlm/food", aiServerBaseUrl, vlmServerPort);
-            
-            // POST 요청 전송
-            log.info("AI 서버로 이미지 분석 요청 전송: {}", analyzeImageURL);
-            ResponseEntity<AiFoodResponse> response = restTemplate.postForEntity(
-            		analyzeImageURL,
-                    requestEntity,
-                    AiFoodResponse.class
-            );
+            log.debug("AI 분석 완료: {}", response);
 
-            log.info("AI 분석 완료: {}", response.getBody());
-            return response.getBody();
+            return response;
 
         } catch (IOException e) {
             log.error("이미지 파일 처리 중 오류 발생", e);
