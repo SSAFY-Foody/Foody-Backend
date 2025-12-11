@@ -46,13 +46,6 @@ public class AccountController {
         return ResponseEntity.ok(loginResponse);
     }
 
-    // 아이디 중복 체크
-    @GetMapping("/check-id")
-    public ResponseEntity<Boolean> checkId(@RequestParam String id) {
-        boolean exists = accountService.isIdDuplicate(id);
-        return ResponseEntity.ok(exists); 
-    }
-    
     /**
      * 로그아웃
      * 리프레쉬 토큰이 없으므로, 서버에선 할 일 X (리프레쉬 토큰 도입 시 수정 필요)
@@ -61,4 +54,12 @@ public class AccountController {
     public ResponseEntity<String> logout() {
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
+    
+    // 아이디 중복 체크
+    @GetMapping("/check-id")
+    public ResponseEntity<Boolean> checkId(@RequestParam String id) {
+    	boolean exists = accountService.isIdDuplicate(id);
+    	return ResponseEntity.ok(exists); 
+    }
+    
 }
