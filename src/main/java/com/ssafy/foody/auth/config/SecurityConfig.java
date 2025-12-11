@@ -45,8 +45,8 @@ public class SecurityConfig {
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 						// '/food/auth/**' 패턴은 로그인 필요 (찜하기, 삭제, 조회)
 			            .requestMatchers("/food/auth/**").authenticated()
-						// 주소 허용
-						.requestMatchers("/error/**", "/account/**", "/oauth2/**", "/login/**", "/food/**", 
+						// 권한 없이 주소 허용
+						.requestMatchers("/error/**", "/account/**", "/oauth2/**", "/email/**", "/login/**", "/food/**", 
 								"/favicon.ico")
 						.permitAll()
 						// 권한 필요
