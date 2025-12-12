@@ -42,6 +42,6 @@ public interface UserMapper {
 	// 유저 정보 + 표준 정보(StdInfo) 조인 조회
     User findUserWithStdInfo(String userId);
     
-    // 권한 수정
+    // 권한 수정 (관리자(ADMIN 전용))
     int updateRole(@Param("id") String id, @Param("role") String role);
 }
