@@ -105,5 +105,18 @@
         JOIN user_foods uf ON fav.user_food_code = uf.code
         WHERE fav.user_id = #{userId}
     </select>
+    
+    <insert id="addFood">
+    	INSERT INTO foods(code, name, category, standard, kcal, carb_g, protein_g, fat_g, sugar_g, natrium_g)
+    	VALUES (
+    	#{code}, #{name}, #{category}, #{standard}, #{kcal}
+    	, #{carb}, #{protein}, #{fat}, #{sugar}, #{natrium})
+    	
+    </insert>
+    
+    <select id="checkFoodExists" resultType="Integer">
+        SELECT COUNT(code) FROM foods
+        WHERE code = #{code}
+    </select>
 
 </mapper>

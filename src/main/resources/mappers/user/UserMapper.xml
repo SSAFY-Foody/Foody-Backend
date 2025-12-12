@@ -200,5 +200,11 @@
 		LEFT JOIN std_infos s ON u.id = s.user_id
 		WHERE u.id = #{userId}
 	</select>
+	
+	<update id="updateUserRole">
+        UPDATE users
+        SET role = #{role}
+        WHERE id = #{userId}
+    </update>
 
 </mapper>

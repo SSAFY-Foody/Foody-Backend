@@ -9,6 +9,7 @@ import com.ssafy.foody.food.domain.Favorite;
 import com.ssafy.foody.food.domain.Food;
 import com.ssafy.foody.food.domain.UserFood;
 import com.ssafy.foody.food.dto.FavoriteResponse;
+import com.ssafy.foody.food.dto.FoodRequest;
 import com.ssafy.foody.food.dto.FoodResponse;
 
 @Mapper
@@ -37,4 +38,10 @@ public interface FoodMapper {
     Integer checkFavoriteExists(@Param("userId") String userId, 
                                 @Param("foodCode") String foodCode, 
                                 @Param("userFoodCode") Integer userFoodCode);
+    
+    //Food Table 에 음식 정보 입력 (관리자 권한 (ADMIN))
+    void addFood(FoodRequest food);
+    
+    //음식 중복 등록 방지용
+    int checkFoodExists(@Param("code") String code);
 }

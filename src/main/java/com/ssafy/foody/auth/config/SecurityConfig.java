@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.ssafy.foody.auth.filter.AdminAccessFilter;
 import com.ssafy.foody.auth.filter.ReportAccessFilter;
 import com.ssafy.foody.auth.handler.OAuth2SuccessHandler;
 import com.ssafy.foody.auth.jwt.JwtAuthenticationFilter;
@@ -45,6 +46,8 @@ public class SecurityConfig {
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 						// '/food/auth/**' 패턴은 로그인 필요 (찜하기, 삭제, 조회)
 			            .requestMatchers("/food/auth/**").authenticated()
+			            // admin 전용 유저 API
+			            .requestMatchers("/admin/**").hasRole("ADMIN")
 						// 권한 없이 주소 허용
 						.requestMatchers("/error/**", "/account/**", "/oauth2/**", "/email/**", "/login/**", "/food/**", 
 								"/favicon.ico")
@@ -60,7 +63,9 @@ public class SecurityConfig {
 				.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userMapper),
 						UsernamePasswordAuthenticationFilter.class)
 				// GUEST 레포트 접근 제한 필터
-				.addFilterAfter(new ReportAccessFilter(), JwtAuthenticationFilter.class);
+				.addFilterAfter(new ReportAccessFilter(), JwtAuthenticationFilter.class)
+				//ADMIN 접근 제한 필터
+				.addFilterAfter(new AdminAccessFilter(), JwtAuthenticationFilter.class);
 
 		return http.build();
 	}
