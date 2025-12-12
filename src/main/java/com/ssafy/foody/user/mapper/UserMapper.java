@@ -43,5 +43,5 @@ public interface UserMapper {
     User findUserWithStdInfo(String userId);
     
     // 권한 수정
-    void updateRole(@Param("id") String id, @Param("role") String role);
+    int updateRole(@Param("id") String id, @Param("role") String role);
 }

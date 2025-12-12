@@ -49,6 +49,8 @@ public class SecurityConfig {
 						.requestMatchers("/error/**", "/account/**", "/oauth2/**", "/email/**", "/login/**", "/food/**", 
 								"/favicon.ico")
 						.permitAll()
+						// admin 전용 유저 API
+						.requestMatchers("/admin/**").hasRole("ADMIN")
 						// 권한 필요
 						.anyRequest().authenticated())
 
