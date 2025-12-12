@@ -42,6 +42,4 @@ public interface FoodMapper {
     //Food Table 에 음식 정보 입력 (관리자 권한 (ADMIN))
     void addFood(FoodRequest food);
     
-    //음식 중복 등록 방지용
-    int checkFoodExists(@Param("code") String code);
 }

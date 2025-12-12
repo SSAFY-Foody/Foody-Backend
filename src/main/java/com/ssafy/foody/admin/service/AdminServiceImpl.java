@@ -2,7 +2,9 @@ package com.ssafy.foody.admin.service;
 
 import org.springframework.stereotype.Service;
 
+import com.ssafy.foody.food.domain.Food;
 import com.ssafy.foody.food.dto.FoodRequest;
+import com.ssafy.foody.food.dto.FoodResponse;
 import com.ssafy.foody.food.mapper.FoodMapper;
 import com.ssafy.foody.user.mapper.UserMapper;
 
@@ -57,9 +59,9 @@ public class AdminServiceImpl implements AdminService {
 			throw new IllegalArgumentException("등록할 음식 정보가 없습니다.");
 		}
 		// 중복 검사 (이미 등록된 음식정보인지)
-		int existCode = foodMapper.checkFoodExists(food.getCode());
-		log.info("중복 값 확인 : {}", existCode);
-		if (existCode > 0) {
+		Food responseFood = foodMapper.findFoodByCode(food.getCode());
+		log.info("중복 값 확인 : {}", responseFood);
+		if (responseFood != null) {
 			throw new IllegalArgumentException("이미 등록된 음식 코드입니다");
 		}
 		
