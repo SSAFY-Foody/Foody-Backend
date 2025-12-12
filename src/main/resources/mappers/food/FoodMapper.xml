@@ -111,12 +111,7 @@
     	VALUES (
     	#{code}, #{name}, #{category}, #{standard}, #{kcal}
     	, #{carb}, #{protein}, #{fat}, #{sugar}, #{natrium})
-    	
     </insert>
     
-    <select id="checkFoodExists" resultType="Integer">
-        SELECT COUNT(code) FROM foods
-        WHERE code = #{code}
-    </select>
 
 </mapper>
