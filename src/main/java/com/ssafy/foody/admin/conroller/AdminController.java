@@ -90,7 +90,7 @@ public class AdminController {
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("activitylevel")
-	public ResponseEntity<List<ActivityLevelResponse>> selectActivityLevel() {
+	public ResponseEntity<List<ActivityLevelResponse>> findAllActivityLevels() {
 		List<ActivityLevelResponse> list = adminService.findAllActivityLevels();
 		log.debug("조회된 활동 레벨 : {}", list);
 		//데이터가 없으면 204 반환
