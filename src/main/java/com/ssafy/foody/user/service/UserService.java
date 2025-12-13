@@ -14,4 +14,7 @@ public interface UserService {
 	// 회원 탈퇴
 	void deleteUser(String userId);
 
+	// 비밀번호 변경
+	void changePassword(String userId, String oldPassword, String newPassword); 
+
 }

@@ -1,5 +1,6 @@
 package com.ssafy.foody.user.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
     private final StdInfoCalculator stdInfoCalculator;
 
     // 내 정보 조회 (ID로 찾기)
@@ -97,6 +99,30 @@ public class UserServiceImpl implements UserService {
         // 유저 삭제
 		userMapper.deleteUser(userId);
 	}
+    
+ 	// 비밀번호 변경
+    @Override
+    @Transactional
+    public void changePassword(String userId, String oldPassword, String newPassword) {
+        // 유저 정보 조회
+        User user = userMapper.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("회원 정보가 없습니다.");
+        }
+
+        // 현재 비밀번호 일치 확인
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새 비밀번호가 기존과 같은지 체크
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+             throw new IllegalArgumentException("새로운 비밀번호는 기존 비밀번호와 달라야 합니다.");
+        }
+
+        // 비밀번호 암호화 및 DB 업데이트
+        userMapper.updatePassword(userId, passwordEncoder.encode(newPassword));
+    }
     
     /**
      * 필수 정보(나이, 키, 몸무게, 성별, 활동량)가 모두 입력되었는지 확인

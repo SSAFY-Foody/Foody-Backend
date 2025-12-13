@@ -6,10 +6,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.foody.user.dto.ChangePasswordRequest;
 import com.ssafy.foody.user.dto.UserResponse;
 import com.ssafy.foody.user.dto.UserUpdateRequest;
 import com.ssafy.foody.user.service.UserService;
@@ -65,5 +67,25 @@ public class UserController {
         userService.deleteUser(userId);
 
         return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+    }
+    
+    /**
+     * 비밀번호 변경
+     * POST /user/change-pw
+     * Header: Authorization: Bearer {Token}
+     */
+    // 멱등성이 없기 때문에 PATCH가 아닌 POST
+    @PostMapping("/change-pw")
+    public ResponseEntity<String> changePassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid ChangePasswordRequest request
+    ) {
+        userService.changePassword(
+                userDetails.getUsername(), // 토큰에서 추출한 ID
+                request.getOldPassword(), 
+                request.getNewPassword()
+        );
+
+        return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
 }
