@@ -43,7 +43,7 @@ public class ReportController {
         // 서비스 호출
         reportService.createReport(userId, request);
         
-        return ResponseEntity.ok("리포트가 성공적으로 생성되었습니다.");
+        return ResponseEntity.ok("레포트가 성공적으로 생성되었습니다.");
     }
     
     /**
