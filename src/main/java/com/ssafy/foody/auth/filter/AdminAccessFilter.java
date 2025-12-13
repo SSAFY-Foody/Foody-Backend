@@ -36,7 +36,7 @@ public class AdminAccessFilter extends OncePerRequestFilter {
 
             // ROLE_ADMIN이 아니면 403
             if (!hasRoleAdmin(auth.getAuthorities())) {
-                writeJson(response, 403, "FORBIDDEN ", "관리자만 접근이 필요합니다.", uri);
+                writeJson(response, 403, "FORBIDDEN ", "관리자 권한이 필요합니다.", uri);
                 return;
             }
         }

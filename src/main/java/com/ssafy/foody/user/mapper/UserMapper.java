@@ -1,8 +1,12 @@
 package com.ssafy.foody.user.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.ssafy.foody.admin.dto.ActivityLevelResponse;
+import com.ssafy.foody.admin.dto.UpdateActivityLevelRequest;
 import com.ssafy.foody.user.domain.StdInfo;
 import com.ssafy.foody.user.domain.User;
 
@@ -44,4 +48,10 @@ public interface UserMapper {
     
     // 권한 수정 (관리자(ADMIN 전용))
     int updateRole(@Param("id") String id, @Param("role") String role);
+    
+    // 활동 레벨 (Activity level) 수정 (관리자(ADMIN 전용))
+    int updateActivityLevelByLevel(UpdateActivityLevelRequest request);
+    
+    // 활동 레벨 전체 조회 (관리자(ADMIN 전용))
+    List<ActivityLevelResponse> findAllActivityLevels();
 }

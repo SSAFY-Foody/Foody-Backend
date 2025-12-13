@@ -206,5 +206,17 @@
         SET role = #{role}
         WHERE id = #{userId}
     </update>
+    
+    <update id = "updateActivityLevelByLevel" parameterType="UpdateActivityLevelRequest">
+    	UPDATE activity_levels
+    	SET value = #{value}
+    	, description = #{description}
+    	WHERE level = #{level}
+    </update>
+    
+    <select id = "findAllActivityLevels" resultType = "activityLevelResponse">
+    	select level, value, description
+    	from activity_levels
+    </select>
 
 </mapper>

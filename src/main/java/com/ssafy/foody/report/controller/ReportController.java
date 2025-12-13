@@ -97,4 +97,5 @@ public class ReportController {
         
         return ResponseEntity.ok("레포트가 삭제되었습니다.");
     }
+    
 }
