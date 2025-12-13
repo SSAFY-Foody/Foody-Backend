@@ -50,7 +50,7 @@ public class SecurityConfig {
 			            .requestMatchers("/admin/**").hasRole("ADMIN")
 						// 권한 없이 주소 허용
 						.requestMatchers("/error/**", "/account/**", "/oauth2/**", "/email/**", "/login/**", "/food/**", 
-								"/favicon.ico")
+								"/favicon.ico", "/character/**")
 						.permitAll()
 						// 권한 필요
 						.anyRequest().authenticated())

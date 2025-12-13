@@ -1,4 +1,4 @@
-package com.ssafy.foody.admin.conroller;
+package com.ssafy.foody.admin.controller;
 
 
 import java.util.List;
