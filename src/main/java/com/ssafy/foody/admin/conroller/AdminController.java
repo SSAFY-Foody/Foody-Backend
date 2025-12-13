@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.foody.admin.dto.ActivityLevelResponse;
@@ -103,12 +104,13 @@ public class AdminController {
 	
 	/**
 	 * Reports 테이블에서 레포트 생성 대기자 조회
-	 * GET /admin/report
+	 * GET /admin/report?page={페이지수}
 	 */
 	@PreAuthorize("harRole('ADMIN')")
 	@GetMapping("report")
-	public ResponseEntity<List<WaitingReportResponse>> findAllWaitingReport() {
-		List<WaitingReportResponse> list = adminService.findAllWaitingReport();
+	public ResponseEntity<List<WaitingReportResponse>> findAllWaitingReport(
+			@RequestParam(value = "page", defaultValue = "1") int page) {
+		List<WaitingReportResponse> list = adminService.findAllWaitingReport(page);
 		log.debug("레포트 대기 목록 : {}" , list);
 		//대기자가 없는 경우에는 front 에서 list size 체크해서 0일경우 대기자가 없습니다 라는 멘트 표시
 		return ResponseEntity.ok(list);

@@ -48,5 +48,5 @@ public interface ReportMapper {
     void deleteReport(int id);
     
     //레포트 생성 대기자 정보 조회(관리자(admin) 권한))
-    List<WaitingReportResponse> findAllWaitingReport();
+    List<WaitingReportResponse> findAllWaitingReport(@Param("offset") int offset, @Param("limit") int limit);
 }

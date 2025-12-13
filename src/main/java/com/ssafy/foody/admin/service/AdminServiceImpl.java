@@ -122,8 +122,10 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<WaitingReportResponse> findAllWaitingReport() {
-		return reportMapper.findAllWaitingReport();
+	public List<WaitingReportResponse> findAllWaitingReport(int page) {
+		int limit = 30; //한 페이지당 보여지는 대기 사용자 수
+		int offset = (page - 1) * limit;
+		return reportMapper.findAllWaitingReport(offset, limit);
 	}
 
 }

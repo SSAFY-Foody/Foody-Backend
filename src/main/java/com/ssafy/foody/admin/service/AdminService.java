@@ -24,5 +24,5 @@ public interface AdminService {
 	List<ActivityLevelResponse> findAllActivityLevels();
 	
 	//레포트 생성 대기자 전체 조회
-	List<WaitingReportResponse> findAllWaitingReport();
+	List<WaitingReportResponse> findAllWaitingReport(int page);
 }	

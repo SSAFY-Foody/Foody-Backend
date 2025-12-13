@@ -213,6 +213,7 @@
     	FROM reports
     	WHERE is_waited = true
     	ORDER BY createdAt ASC
+    	LIMIT #{limit} OFFSET #{offset}
     </select>
 
 </mapper>
