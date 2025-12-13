@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.foody.admin.dto.ActivityLevelResponse;
 import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.admin.dto.UpdateActivityLevelRequest;
+import com.ssafy.foody.admin.dto.UpdateWaitingReportRequest;
 import com.ssafy.foody.food.domain.Food;
 import com.ssafy.foody.food.dto.FoodRequest;
 import com.ssafy.foody.food.mapper.FoodMapper;
@@ -126,6 +127,25 @@ public class AdminServiceImpl implements AdminService {
 		int limit = 30; //한 페이지당 보여지는 대기 사용자 수
 		int offset = (page - 1) * limit;
 		return reportMapper.findAllWaitingReport(offset, limit);
+	}
+
+	@Override
+	@Transactional
+	public void updateWaitingReport(UpdateWaitingReportRequest updateReportRequest) {
+		//유효성 검사
+		if(updateReportRequest == null) {
+			throw new IllegalArgumentException("수정할 레포트 내역이 없습니다");
+		}
+		
+		int updated = reportMapper.updateWaitingReport(updateReportRequest);
+		
+		if(updated == 0 ) {
+			throw new IllegalArgumentException("수정할 레포트가 존재하지 않거나 변경할 수 없습니다.");
+		}
+		
+		reportMapper.toggleFalseWaitingStatus(updateReportRequest.getId());
+		
+		
 	}
 
 }

@@ -19,6 +19,7 @@ import com.ssafy.foody.admin.dto.ActivityLevelResponse;
 import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.admin.dto.UpdateActivityLevelRequest;
 import com.ssafy.foody.admin.dto.UpdateRoleRequest;
+import com.ssafy.foody.admin.dto.UpdateWaitingReportRequest;
 import com.ssafy.foody.admin.service.AdminService;
 import com.ssafy.foody.food.dto.FoodRequest;
 
@@ -106,7 +107,7 @@ public class AdminController {
 	 * Reports 테이블에서 레포트 생성 대기자 조회
 	 * GET /admin/report?page={페이지수}
 	 */
-	@PreAuthorize("harRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("report")
 	public ResponseEntity<List<WaitingReportResponse>> findAllWaitingReport(
 			@RequestParam(value = "page", defaultValue = "1") int page) {
@@ -115,5 +116,20 @@ public class AdminController {
 		//대기자가 없는 경우에는 front 에서 list size 체크해서 0일경우 대기자가 없습니다 라는 멘트 표시
 		return ResponseEntity.ok(list);
 	}
+	
+	/**
+	 * 대기중인 Reports 작성
+	 * PATCH /admin/report
+	 * 요청 Body(raw)
+	 * id, score, character_id, comment
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@PatchMapping("report")
+	public ResponseEntity<String> updateWaitingReport(
+			@Valid @RequestBody UpdateWaitingReportRequest updateReportRequest){
+		adminService.updateWaitingReport(updateReportRequest);
+		return ResponseEntity.ok("레포트 수정이 성공적으로 완료되었습니다.");
+	}
+	
 	
 }

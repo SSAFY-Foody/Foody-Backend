@@ -215,5 +215,21 @@
     	ORDER BY createdAt ASC
     	LIMIT #{limit} OFFSET #{offset}
     </select>
+    
+    <update id = "updateWaitingReport">
+    	UPDATE reports
+    	SET
+    	score = #{score},
+    	character_id = #{characterId},
+    	comment = #{comment}
+    	WHERE id = #{id}
+    </update>
+    
+    <update id = "toggleFalseWaitingStatus">
+    	UPDATE reports
+    	SET
+    	is_waited = false
+    	WHERE id = #{id}
+    </update>
 
 </mapper>
