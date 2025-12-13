@@ -208,10 +208,10 @@
         DELETE FROM reports WHERE id = #{id}
     </delete>
     
-    <select id="findAllWaitingReport" resultType="ReportWaitingResponse">
+    <select id="findAllWaitingReport" resultType="WaitingReportResponse">
     	SELECT id, user_id as userId, created_at as createdAt
     	FROM reports
-    	WHERE is_waited = 1
+    	WHERE is_waited = true
     	ORDER BY createdAt ASC
     </select>
 

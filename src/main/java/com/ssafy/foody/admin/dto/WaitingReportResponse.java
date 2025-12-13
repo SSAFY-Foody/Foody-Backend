@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ReportWaitingResponse {
+public class WaitingReportResponse {
 	private int id;
 	private String userId;
 	private LocalDateTime createdAt;

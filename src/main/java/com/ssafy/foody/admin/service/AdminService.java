@@ -3,7 +3,7 @@ package com.ssafy.foody.admin.service;
 import java.util.List;
 
 import com.ssafy.foody.admin.dto.ActivityLevelResponse;
-import com.ssafy.foody.admin.dto.ReportWaitingResponse;
+import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.admin.dto.UpdateActivityLevelRequest;
 import com.ssafy.foody.food.dto.FoodRequest;
 
@@ -24,5 +24,5 @@ public interface AdminService {
 	List<ActivityLevelResponse> findAllActivityLevels();
 	
 	//레포트 생성 대기자 전체 조회
-	List<ReportWaitingResponse> findallWaitingReport();
+	List<WaitingReportResponse> findAllWaitingReport();
 }	

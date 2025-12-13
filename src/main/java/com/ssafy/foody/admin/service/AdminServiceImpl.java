@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.foody.admin.dto.ActivityLevelResponse;
-import com.ssafy.foody.admin.dto.ReportWaitingResponse;
+import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.admin.dto.UpdateActivityLevelRequest;
 import com.ssafy.foody.food.domain.Food;
 import com.ssafy.foody.food.dto.FoodRequest;
@@ -122,7 +122,7 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ReportWaitingResponse> findallWaitingReport() {
+	public List<WaitingReportResponse> findAllWaitingReport() {
 		return reportMapper.findAllWaitingReport();
 	}
 
