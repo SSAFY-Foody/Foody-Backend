@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.report.domain.Meal;
 import com.ssafy.foody.report.domain.MealFood;
 import com.ssafy.foody.report.domain.Report;
@@ -45,4 +46,7 @@ public interface ReportMapper {
 
     // 삭제
     void deleteReport(int id);
+    
+    //레포트 생성 대기자 정보 조회(관리자(admin) 권한))
+    List<WaitingReportResponse> findAllWaitingReport();
 }

@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.foody.admin.dto.ActivityLevelResponse;
+import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.admin.dto.UpdateActivityLevelRequest;
 import com.ssafy.foody.food.domain.Food;
 import com.ssafy.foody.food.dto.FoodRequest;
 import com.ssafy.foody.food.mapper.FoodMapper;
+import com.ssafy.foody.report.mapper.ReportMapper;
 import com.ssafy.foody.user.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminServiceImpl implements AdminService {
 	private final UserMapper userMapper;
 	private final FoodMapper foodMapper;
+	private final ReportMapper reportMapper;
 	
 	@Override
 	@Transactional
@@ -115,6 +118,12 @@ public class AdminServiceImpl implements AdminService {
 	@Transactional(readOnly = true)
 	public List<ActivityLevelResponse> findAllActivityLevels() {
 		return userMapper.findAllActivityLevels();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<WaitingReportResponse> findAllWaitingReport() {
+		return reportMapper.findAllWaitingReport();
 	}
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.foody.admin.dto.ActivityLevelResponse;
+import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.admin.dto.UpdateActivityLevelRequest;
 import com.ssafy.foody.admin.dto.UpdateRoleRequest;
 import com.ssafy.foody.admin.service.AdminService;
@@ -97,6 +98,19 @@ public class AdminController {
 		if(list == null || list.isEmpty()) {
 			return ResponseEntity.noContent().build();
 		}
+		return ResponseEntity.ok(list);
+	}
+	
+	/**
+	 * Reports 테이블에서 레포트 생성 대기자 조회
+	 * GET /admin/report
+	 */
+	@PreAuthorize("harRole('ADMIN')")
+	@GetMapping("report")
+	public ResponseEntity<List<WaitingReportResponse>> findAllWaitingReport() {
+		List<WaitingReportResponse> list = adminService.findAllWaitingReport();
+		log.debug("레포트 대기 목록 : {}" , list);
+		//대기자가 없는 경우에는 front 에서 list size 체크해서 0일경우 대기자가 없습니다 라는 멘트 표시
 		return ResponseEntity.ok(list);
 	}
 	
