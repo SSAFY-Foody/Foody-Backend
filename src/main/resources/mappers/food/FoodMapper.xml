@@ -43,6 +43,20 @@
 
 	</select>
 
+	<!-- 음식 개수 조회 (페이지네이션용) -->
+	<select id="countFoodList" resultType="int">
+		SELECT COUNT(*)
+		FROM foods
+		<where>
+			<if test="keyword != null and keyword != ''">
+				AND name LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="category != null and category != ''">
+				AND category LIKE CONCAT('%', #{category}, '%')
+			</if>
+		</where>
+	</select>
+
 	<select id="findFoodByCode" resultMap="foodResultMap">
 		SELECT
 		code, name, category, standard, kcal,
@@ -117,5 +131,12 @@
     	DELETE FROM foods
     	WHERE code = #{code}
     </delete>
+    
+    <select id="selectDistinctCategories" resultType="String">
+        SELECT DISTINCT category
+        FROM foods
+        WHERE category IS NOT NULL AND category != ''
+        ORDER BY category ASC
+    </select>
 
 </mapper>

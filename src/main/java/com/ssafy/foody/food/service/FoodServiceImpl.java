@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.foody.food.domain.Favorite;
 import com.ssafy.foody.food.dto.FavoriteResponse;
+import com.ssafy.foody.food.dto.FoodListResponse;
 import com.ssafy.foody.food.dto.FoodResponse;
 import com.ssafy.foody.food.mapper.FoodMapper;
 
@@ -18,37 +19,46 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class FoodServiceImpl implements FoodService {
 
-	private final FoodMapper foodMapper;
-	
-	// 한 페이지당 보여줄 개수 정의
-	private static final int LIST_LIMIT = 50;
-		
-	@Override
-	@Transactional(readOnly = true)
-	public List<FoodResponse> getFoodList(int page, String keyword, String category) {
-	    
-	    int offset = (page - 1) * LIST_LIMIT;
-	    
-	    //검색어가 null이 안될때에만
-	    if (keyword != null) {
-	        keyword = keyword.trim();
-	        // 빈 문자열이면 그냥 전체 조회하도록 처리
-	        if (keyword.isEmpty()) {
-	            keyword = null;
-	        }
-	    }
+    private final FoodMapper foodMapper;
 
-	    return foodMapper.selectFoodList(offset, LIST_LIMIT, keyword, category);
-	}
-	
-	@Override
+    // 한 페이지당 보여줄 개수 정의
+    private static final int LIST_LIMIT = 8;
+
+    @Override
+    @Transactional(readOnly = true)
+    public FoodListResponse getFoodList(int page, String keyword, String category) {
+
+        int offset = (page - 1) * LIST_LIMIT;
+
+        // 검색어가 null이 안될때에만
+        if (keyword != null) {
+            keyword = keyword.trim();
+            // 빈 문자열이면 그냥 전체 조회하도록 처리
+            if (keyword.isEmpty()) {
+                keyword = null;
+            }
+        }
+
+        // 음식 리스트 조회
+        List<FoodResponse> list = foodMapper.selectFoodList(offset, LIST_LIMIT, keyword, category);
+
+        // 전체 개수 조회
+        int totalCount = foodMapper.countFoodList(keyword, category);
+
+        // 전체 페이지 수 계산
+        int totalPages = (int) Math.ceil((double) totalCount / LIST_LIMIT);
+
+        return new FoodListResponse(list, totalCount, page, totalPages);
+    }
+
+    @Override
     @Transactional
     public void addFavorite(String userId, String foodCode, Integer userFoodCode) {
         // 유효성 검사
         if (foodCode == null && userFoodCode == null) {
             throw new IllegalArgumentException("찜할 음식 정보가 없습니다.");
         }
-        
+
         // 유효성 검사
         if (foodCode != null && userFoodCode != null) {
             throw new IllegalArgumentException("찜할 음식 정보가 잘못 됐습니다.");
@@ -63,8 +73,8 @@ public class FoodServiceImpl implements FoodService {
         // 찜
         Favorite favorite = Favorite.builder()
                 .userId(userId)
-                .foodCode(foodCode)          // DB 음식이면 값 있음, 아니면 null
-                .userFoodCode(userFoodCode)  // 사용자 음식이면 값 있음, 아니면 null
+                .foodCode(foodCode) // DB 음식이면 값 있음, 아니면 null
+                .userFoodCode(userFoodCode) // 사용자 음식이면 값 있음, 아니면 null
                 .build();
 
         foodMapper.insertFavorite(favorite);
@@ -80,6 +90,11 @@ public class FoodServiceImpl implements FoodService {
     @Transactional(readOnly = true)
     public List<FavoriteResponse> getFavoriteList(String userId) {
         return foodMapper.selectFavoriteList(userId);
+    }
+
+    @Override
+    public List<String> getCategories() {
+        return foodMapper.selectDistinctCategories();
     }
 
 }
