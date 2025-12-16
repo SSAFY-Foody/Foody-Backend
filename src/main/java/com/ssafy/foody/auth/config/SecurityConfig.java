@@ -1,5 +1,6 @@
 package com.ssafy.foody.auth.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,11 +32,22 @@ public class SecurityConfig {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserMapper userMapper;
 
+	// front 서버 BASE URL
+	@Value("${front.server.base.url}")
+	private String frontServerBaseUrl;
+
+	// front 서버 port
+	@Value("${front.server.port}")
+	private String frontServerPort;
+
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 				// CSRF 비활성화 (REST API이므로)
 				.csrf(AbstractHttpConfigurer::disable)
+
+				// CORS 설정 활성화
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
 				// 세션 안 씀 (JWT로 대체)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -45,11 +57,11 @@ public class SecurityConfig {
 						// Swagger 관련 주소
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 						// '/food/auth/**' 패턴은 로그인 필요 (찜하기, 삭제, 조회)
-			            .requestMatchers("/food/auth/**").authenticated()
-			            // admin 전용 유저 API
-			            .requestMatchers("/admin/**").hasRole("ADMIN")
+						.requestMatchers("/food/auth/**").authenticated()
+						// admin 전용 유저 API
+						.requestMatchers("/admin/**").hasRole("ADMIN")
 						// 권한 없이 주소 허용
-						.requestMatchers("/error/**", "/account/**", "/oauth2/**", "/email/**", "/login/**", "/food/**", 
+						.requestMatchers("/error/**", "/account/**", "/oauth2/**", "/email/**", "/login/**", "/food/**",
 								"/favicon.ico", "/character/**")
 						.permitAll()
 						// 권한 필요
@@ -64,7 +76,7 @@ public class SecurityConfig {
 						UsernamePasswordAuthenticationFilter.class)
 				// GUEST 레포트 접근 제한 필터
 				.addFilterAfter(new ReportAccessFilter(), JwtAuthenticationFilter.class)
-				//ADMIN 접근 제한 필터
+				// ADMIN 접근 제한 필터
 				.addFilterAfter(new AdminAccessFilter(), JwtAuthenticationFilter.class);
 
 		return http.build();
@@ -73,5 +85,34 @@ public class SecurityConfig {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+		org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+
+		// 허용할 Origin (프론트엔드 주소)
+		String frontendURL = String.format("%s:%s", frontServerBaseUrl, frontServerPort);
+		configuration.addAllowedOrigin(frontendURL);
+
+		// 허용할 HTTP 메서드
+		configuration.addAllowedMethod("GET");
+		configuration.addAllowedMethod("POST");
+		configuration.addAllowedMethod("PUT");
+		configuration.addAllowedMethod("PATCH");
+		configuration.addAllowedMethod("DELETE");
+		configuration.addAllowedMethod("OPTIONS");
+
+		// 허용할 헤더
+		configuration.addAllowedHeader("*");
+
+		// 인증 정보 포함 허용
+		configuration.setAllowCredentials(true);
+
+		// 모든 경로에 CORS 설정 적용
+		org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+
+		return source;
 	}
 }
