@@ -9,7 +9,7 @@ public class FindAccountRequest {
     @Data
     public static class FindIdSend {
         @NotBlank(message = "이메일을 입력해주세요.")
-        @Email
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
         private String email;
     }
 
@@ -17,7 +17,7 @@ public class FindAccountRequest {
     @Data
     public static class FindIdVerify {
         @NotBlank(message = "이메일을 입력해주세요.")
-        @Email
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
         private String email;
 
         @NotBlank(message = "인증번호를 입력해주세요.")
@@ -31,7 +31,7 @@ public class FindAccountRequest {
         private String id;
 
         @NotBlank(message = "이메일을 입력해주세요.")
-        @Email
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
         private String email;
     }
 

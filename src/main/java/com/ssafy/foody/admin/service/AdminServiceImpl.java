@@ -13,6 +13,7 @@ import com.ssafy.foody.food.domain.Food;
 import com.ssafy.foody.food.dto.FoodRequest;
 import com.ssafy.foody.food.mapper.FoodMapper;
 import com.ssafy.foody.report.mapper.ReportMapper;
+import com.ssafy.foody.user.domain.User;
 import com.ssafy.foody.user.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -25,42 +26,54 @@ public class AdminServiceImpl implements AdminService {
 	private final UserMapper userMapper;
 	private final FoodMapper foodMapper;
 	private final ReportMapper reportMapper;
-	
+
 	@Override
 	@Transactional
 	public void updateUserRole(String userId, String role) {
-		
+
+		User targetUser = userMapper.findById(userId);
+
+		// 존재하지 않는 유저
+		if (targetUser == null) {
+			throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+		}
+
+		// GUEST 권한 사용자는 권한 변경 불가
+		if ("ROLE_GUEST".equals(targetUser.getRole())) {
+			throw new IllegalArgumentException("GUEST 권한을 가진 사용자는 권한을 변경할 수 없습니다.");
+		}
+
 		String normalizedRole = normalize(role);
-		
+
 		int updated = userMapper.updateRole(userId, normalizedRole);
-		
-		if(updated == 0 ) {
-			throw new IllegalArgumentException("해당 유저가 존재하지 않거나 권한을 변경할 수 없습니다");
+
+		if (updated == 0) {
+			throw new IllegalArgumentException("알 수 없는 이유로 권한 수정에 실패하였습니다.");
 		}
 	}
-	
+
 	// 권한 명 제대로 되었는지 검사하는 메서드
 	private String normalize(String role) {
 		if (role == null || role.isBlank()) {
-            throw new IllegalArgumentException("권한 값이 비어있습니다.");
-        }
+			throw new IllegalArgumentException("권한 값이 비어있습니다.");
+		}
 
-        // 대소문자 통일
-        role = role.trim().toUpperCase();
+		// 대소문자 통일
+		role = role.trim().toUpperCase();
 
-        // ROLE_ 접두어 없으면 붙이기
-        if (!role.startsWith("ROLE_")) {
-            role = "ROLE_" + role;
-        }
+		// ROLE_ 접두어 없으면 붙이기
+		if (!role.startsWith("ROLE_")) {
+			role = "ROLE_" + role;
+		}
 
-        // 허용된 권한만 통과
-        if (!"ROLE_USER".equals(role) && !"ROLE_ADMIN".equals(role)) {
-            throw new IllegalArgumentException("허용되지 않은 권한입니다: " + role);
-        }
+		// 허용된 권한만 통과
+		if (!"ROLE_USER".equals(role) && !"ROLE_ADMIN".equals(role)) {
+			throw new IllegalArgumentException("허용되지 않은 권한입니다: " + role);
+		}
 
-        return role;
+		return role;
 	}
-	
+
 	@Override
 	@Transactional
 	public void addFood(FoodRequest food) {
@@ -74,47 +87,47 @@ public class AdminServiceImpl implements AdminService {
 		if (foodResponse != null) {
 			throw new IllegalArgumentException("이미 등록된 음식 코드입니다");
 		}
-		
-		//음식 등록
+
+		// 음식 등록
 		foodMapper.addFood(food);
 	}
 
 	@Override
 	@Transactional
 	public void deleteFood(String code) {
-		//유효성 검사
-		if(code == null) {
+		// 유효성 검사
+		if (code == null) {
 			throw new IllegalArgumentException("입력한 음식값이 존재하지 않습니다");
 		}
 		Food foodResponse = foodMapper.findFoodByCode(code);
-		
+
 		log.debug("삭제하려는 음식 정보 : {}", foodResponse);
 		// 유효성 검사
-		if(foodResponse == null) {
+		if (foodResponse == null) {
 			throw new IllegalArgumentException("삭제하려는 음식 정보가 존재하지 않습니다");
 		}
-		
-		//음식 삭제
+
+		// 음식 삭제
 		foodMapper.deleteFoodByCode(code);
 	}
 
 	@Override
 	@Transactional
 	public void updateActivityLevelByLevel(UpdateActivityLevelRequest request) {
-		//유효성 검사
-		if(request == null) {
+		// 유효성 검사
+		if (request == null) {
 			throw new IllegalArgumentException("수정할 활동 내용이 없습니다.");
 		}
-		
-		//활동 권한 수정
+
+		// 활동 권한 수정
 		int updated = userMapper.updateActivityLevelByLevel(request);
-		
-		if(updated == 0) {
+
+		if (updated == 0) {
 			throw new IllegalArgumentException("해당 활동 정보가 존재지 않거나 변경할  수 없습니다.");
 		}
-		
+
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActivityLevelResponse> findAllActivityLevels() {
@@ -124,7 +137,7 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<WaitingReportResponse> findAllWaitingReport(int page) {
-		int limit = 30; //한 페이지당 보여지는 대기 사용자 수
+		int limit = 30; // 한 페이지당 보여지는 대기 사용자 수
 		int offset = (page - 1) * limit;
 		return reportMapper.findAllWaitingReport(offset, limit);
 	}
@@ -132,20 +145,19 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	@Transactional
 	public void updateWaitingReport(UpdateWaitingReportRequest updateReportRequest) {
-		//유효성 검사
-		if(updateReportRequest == null) {
+		// 유효성 검사
+		if (updateReportRequest == null) {
 			throw new IllegalArgumentException("수정할 레포트 내역이 없습니다");
 		}
-		
+
 		int updated = reportMapper.updateWaitingReport(updateReportRequest);
-		
-		if(updated == 0 ) {
+
+		if (updated == 0) {
 			throw new IllegalArgumentException("수정할 레포트가 존재하지 않거나 변경할 수 없습니다.");
 		}
-		
+
 		reportMapper.toggleFalseWaitingStatus(updateReportRequest.getId());
-		
-		
+
 	}
 
 }
