@@ -19,4 +19,17 @@ public class MealFood {
     
     private double eatenWeight;    // 먹은 양
     
+    // 음식 상세 정보 (JOIN으로 가져온 데이터)
+    private String foodName;       // DB 음식 이름
+    private String foodCategory;   // DB 음식 카테고리
+    private String userFoodName;   // 사용자 입력 음식 이름
+    
+    // 계산된 영양소 값 (먹은 양 기준)
+    private Double eatenKcal;
+    private Double eatenCarb;
+    private Double eatenProtein;
+    private Double eatenFat;
+    private Double eatenSugar;
+    private Double eatenNatrium;
+    
 }

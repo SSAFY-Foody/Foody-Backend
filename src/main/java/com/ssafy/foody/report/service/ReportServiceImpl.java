@@ -2,7 +2,9 @@ package com.ssafy.foody.report.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,10 +80,23 @@ public class ReportServiceImpl implements ReportService {
 		double dayTotalSugar = 0;
 		double dayTotalNatrium = 0;
 		
+		// 모든 끼니 타입을 먼저 생성 (음식이 없어도 저장)
+		String[] allMealTypes = {"BREAKFAST", "LUNCH", "DINNER", "SNACK"};
+		Map<String, Meal> mealMap = new HashMap<>();
+		
+		for (String mealType : allMealTypes) {
+			Meal meal = Meal.builder()
+				.reportId(report.getId())
+				.mealType(mealType)
+				.build();
+			reportMapper.saveMeal(meal);
+			mealMap.put(mealType, meal);
+		}
+		
 		// [AI 요청용] 끼니별 정보 준비
         List<AiReportRequest.MealInfo> mealInfos = new ArrayList<>();
 
-		// 끼니(Meals) 반복 처리
+		// 끼니(Meals) 반복 처리 - 음식이 있는 끼니만
 		if (request.getMeals() != null) {
 			for (ReportRequest.MealRequest mealReq : request.getMeals()) {
 
@@ -93,9 +108,8 @@ public class ReportServiceImpl implements ReportService {
 				double mealTotalSugar = 0;
 				double mealTotalNatrium = 0;
 
-				// Meal 껍데기 저장 (ID 확보)
-				Meal meal = Meal.builder().reportId(report.getId()).mealType(mealReq.getMealType()).build();
-				reportMapper.saveMeal(meal); // meal_id 생성됨
+				// 이미 생성된 Meal 가져오기
+				Meal meal = mealMap.get(mealReq.getMealType());
 				
 				// [AI 요청용] 음식 리스트 준비
                 List<AiReportRequest.FoodInfo> foodInfos = new ArrayList<>();
