@@ -52,6 +52,12 @@ public class SecurityConfig {
 				// 세션 안 씀 (JWT로 대체)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+				// Form Login 비활성화 (REST API는 폼 로그인 불필요)
+				.formLogin(AbstractHttpConfigurer::disable)
+
+				// HTTP Basic 비활성화
+				.httpBasic(AbstractHttpConfigurer::disable)
+
 				// 요청 권한 설정 (requestMatchers 메서드 사용)
 				.authorizeHttpRequests(auth -> auth
 						// Swagger 관련 주소
@@ -66,6 +72,21 @@ public class SecurityConfig {
 						.permitAll()
 						// 권한 필요
 						.anyRequest().authenticated())
+
+				// 인증/인가 예외 처리
+				.exceptionHandling(exception -> exception
+						// 인증 실패 시 (401)
+						.authenticationEntryPoint((request, response, authException) -> {
+							response.setStatus(401);
+							response.setContentType("application/json;charset=UTF-8");
+							response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"로그인이 필요합니다.\"}");
+						})
+						// 인가 실패 시 (403)
+						.accessDeniedHandler((request, response, accessDeniedException) -> {
+							response.setStatus(403);
+							response.setContentType("application/json;charset=UTF-8");
+							response.getWriter().write("{\"error\":\"Forbidden\",\"message\":\"접근 권한이 없습니다.\"}");
+						}))
 
 				// OAuth2 로그인 설정
 				.oauth2Login(oauth -> oauth.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
