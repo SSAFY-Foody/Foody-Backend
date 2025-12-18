@@ -41,7 +41,7 @@ public class ReportServiceImpl implements ReportService {
 	private final AuthHelper authHelper;
 
 	// 한 페이지당 보여줄 개수 정의
-	private static final int LIST_LIMIT = 10;
+	private static final int LIST_LIMIT = 5;
 
 	@Override
 	@Transactional
@@ -394,7 +394,7 @@ public class ReportServiceImpl implements ReportService {
 				.score(report.getScore())
 				.comment(report.getComment())
 				.characterId(report.getCharacterId())
-				.isWaited(report.isWaited())
+				.isWaited(report.getIsWaited())
 				.totalKcal(report.getTotalKcal())
 				.totalCarb(report.getTotalCarb())
 				.totalProtein(report.getTotalProtein())
@@ -512,7 +512,7 @@ public class ReportServiceImpl implements ReportService {
 				.score(report.getScore())
 				.comment(report.getComment())
 				.characterId(report.getCharacterId())
-				.isWaited(report.isWaited())
+				.isWaited(report.getIsWaited())
 				.totalKcal(report.getTotalKcal())
 				.totalCarb(report.getTotalCarb())
 				.totalProtein(report.getTotalProtein())

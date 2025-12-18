@@ -88,4 +88,13 @@ public class ReportResponse {
         private Double eatenSugar;
         private Double eatenNatrium;
     }
+    
+    // 기본형 Getter/Setter 직접 선언 (네이밍 불일치 해결) - 혹은 Boolean 써도 됨
+    public boolean getIsWaited() {
+        return isWaited;
+    }
+
+    public void setIsWaited(boolean isWaited) {
+        this.isWaited = isWaited;
+    }
 }

@@ -20,7 +20,7 @@ public class ReportListResponse {
     private Double score;
     private String comment;
     private Integer characterId;
-    private boolean isWaited;
+    private Boolean isWaited;
 
     // 하루 섭취 영양소 총합
     private Double totalKcal;
