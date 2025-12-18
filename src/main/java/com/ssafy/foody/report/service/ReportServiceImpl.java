@@ -19,6 +19,8 @@ import com.ssafy.foody.report.domain.Report;
 import com.ssafy.foody.report.dto.AiReportRequest;
 import com.ssafy.foody.report.dto.AiReportResponse;
 import com.ssafy.foody.report.dto.ReportRequest;
+import com.ssafy.foody.report.dto.ReportListResponse;
+import com.ssafy.foody.report.dto.ReportResponse;
 import com.ssafy.foody.report.mapper.ReportMapper;
 import com.ssafy.foody.user.domain.StdInfo;
 import com.ssafy.foody.user.domain.User;
@@ -37,7 +39,7 @@ public class ReportServiceImpl implements ReportService {
 	private final ReportMapper reportMapper;
 	private final AiReportService aiReportService; // 순환 참조 주의
 	private final AuthHelper authHelper;
-	
+
 	// 한 페이지당 보여줄 개수 정의
 	private static final int LIST_LIMIT = 10;
 
@@ -53,9 +55,9 @@ public class ReportServiceImpl implements ReportService {
 		} else if (user.getStdInfo() == null) {
 			throw new IllegalArgumentException("표준 영양소 정보가 없습니다. 회원 정보를 먼저 수정해주세요.");
 		}
-		
+
 		StdInfo std = user.getStdInfo();
-		
+
 		log.debug("User: {}, StdInfo: {}", user, std);
 
 		// 분석 요청이 null일 경우 기본 false로 처리
@@ -71,7 +73,7 @@ public class ReportServiceImpl implements ReportService {
 				.userStdProtein(std.getStdProtein()).userStdFat(std.getStdFat()).userStdSugar(std.getStdSugar())
 				.userStdNatrium(std.getStdNatrium()).isWaited(isWaitedValue).build();
 		reportMapper.saveReport(report); // report_id 생성
-		
+
 		// 하루 전체 영양소 합계 변수
 		double dayTotalKcal = 0;
 		double dayTotalCarb = 0;
@@ -79,22 +81,22 @@ public class ReportServiceImpl implements ReportService {
 		double dayTotalFat = 0;
 		double dayTotalSugar = 0;
 		double dayTotalNatrium = 0;
-		
+
 		// 모든 끼니 타입을 먼저 생성 (음식이 없어도 저장)
-		String[] allMealTypes = {"BREAKFAST", "LUNCH", "DINNER", "SNACK"};
+		String[] allMealTypes = { "BREAKFAST", "LUNCH", "DINNER", "SNACK" };
 		Map<String, Meal> mealMap = new HashMap<>();
-		
+
 		for (String mealType : allMealTypes) {
 			Meal meal = Meal.builder()
-				.reportId(report.getId())
-				.mealType(mealType)
-				.build();
+					.reportId(report.getId())
+					.mealType(mealType)
+					.build();
 			reportMapper.saveMeal(meal);
 			mealMap.put(mealType, meal);
 		}
-		
+
 		// [AI 요청용] 끼니별 정보 준비
-        List<AiReportRequest.MealInfo> mealInfos = new ArrayList<>();
+		List<AiReportRequest.MealInfo> mealInfos = new ArrayList<>();
 
 		// 끼니(Meals) 반복 처리 - 음식이 있는 끼니만
 		if (request.getMeals() != null) {
@@ -110,9 +112,9 @@ public class ReportServiceImpl implements ReportService {
 
 				// 이미 생성된 Meal 가져오기
 				Meal meal = mealMap.get(mealReq.getMealType());
-				
+
 				// [AI 요청용] 음식 리스트 준비
-                List<AiReportRequest.FoodInfo> foodInfos = new ArrayList<>();
+				List<AiReportRequest.FoodInfo> foodInfos = new ArrayList<>();
 
 				// 음식(Foods) 반복 처리
 				if (mealReq.getFoods() != null) {
@@ -174,17 +176,17 @@ public class ReportServiceImpl implements ReportService {
 							foodMapper.saveUserFood(customFood);
 							userFoodCode = customFood.getCode();
 						}
-																
+
 						// 비례식 계산: (먹은 양 / 기준 양) * 영양소
 						// item.getWeight()는 사용자가 실제 먹은 양(g 또는 ml)
 						double ratio = item.getEatenWeight() / baseStandard;
 
-                        double eatenKcal = roundTwo(baseKcal * ratio);
-                        double eatenCarb = roundTwo(baseCarb * ratio);
-                        double eatenProtein = roundTwo(baseProtein * ratio);
-                        double eatenFat = roundTwo(baseFat * ratio);
-                        double eatenSugar = roundTwo(baseSugar * ratio);
-                        double eatenNatrium = roundTwo(baseNatrium * ratio);
+						double eatenKcal = roundTwo(baseKcal * ratio);
+						double eatenCarb = roundTwo(baseCarb * ratio);
+						double eatenProtein = roundTwo(baseProtein * ratio);
+						double eatenFat = roundTwo(baseFat * ratio);
+						double eatenSugar = roundTwo(baseSugar * ratio);
+						double eatenNatrium = roundTwo(baseNatrium * ratio);
 
 						// 합계 누적
 						mealTotalKcal += eatenKcal;
@@ -199,28 +201,28 @@ public class ReportServiceImpl implements ReportService {
 								.userFoodCode(userFoodCode).eatenWeight(item.getEatenWeight())
 								.build();
 						reportMapper.saveMealFood(mealFood);
-						
+
 						// [AI 요청용] 음식 객체 추가
-                        foodInfos.add(AiReportRequest.FoodInfo.builder()
-                                .name(item.getName())
-                                .eatenWeight(item.getEatenWeight())
-                                .eatenKcal(eatenKcal)
-                                .eatenCarb(eatenCarb)
-                                .eatenProtein(eatenProtein)
-                                .eatenFat(eatenFat)
-                                .eatenSugar(eatenSugar)
-                                .eatenNatrium(eatenNatrium)
-                                .build());
+						foodInfos.add(AiReportRequest.FoodInfo.builder()
+								.name(item.getName())
+								.eatenWeight(item.getEatenWeight())
+								.eatenKcal(eatenKcal)
+								.eatenCarb(eatenCarb)
+								.eatenProtein(eatenProtein)
+								.eatenFat(eatenFat)
+								.eatenSugar(eatenSugar)
+								.eatenNatrium(eatenNatrium)
+								.build());
 					}
 				} // end food loop
 
 				// 끼니(Meal) 총합 업데이트
 				meal.setTotalKcal(roundTwo(mealTotalKcal));
-                meal.setTotalCarb(roundTwo(mealTotalCarb));
-                meal.setTotalProtein(roundTwo(mealTotalProtein));
-                meal.setTotalFat(roundTwo(mealTotalFat));
-                meal.setTotalSugar(roundTwo(mealTotalSugar));
-                meal.setTotalNatrium(roundTwo(mealTotalNatrium));
+				meal.setTotalCarb(roundTwo(mealTotalCarb));
+				meal.setTotalProtein(roundTwo(mealTotalProtein));
+				meal.setTotalFat(roundTwo(mealTotalFat));
+				meal.setTotalSugar(roundTwo(mealTotalSugar));
+				meal.setTotalNatrium(roundTwo(mealTotalNatrium));
 
 				// Meal 업데이트
 				reportMapper.updateMeal(meal);
@@ -232,18 +234,18 @@ public class ReportServiceImpl implements ReportService {
 				dayTotalFat += mealTotalFat;
 				dayTotalSugar += mealTotalSugar;
 				dayTotalNatrium += mealTotalNatrium;
-				
+
 				// [AI 요청용] 끼니 객체 추가
-                mealInfos.add(AiReportRequest.MealInfo.builder()
-                        .mealType(mealReq.getMealType())
-                        .totalKcal(roundTwo(mealTotalKcal))
-                        .totalCarb(roundTwo(mealTotalCarb))
-                        .totalProtein(roundTwo(mealTotalProtein))
-                        .totalFat(roundTwo(mealTotalFat))
-                        .totalSugar(roundTwo(mealTotalSugar))
-                        .totalNatrium(roundTwo(mealTotalNatrium))
-                        .foods(foodInfos) // 위에서 만든 음식 리스트 포함
-                        .build());
+				mealInfos.add(AiReportRequest.MealInfo.builder()
+						.mealType(mealReq.getMealType())
+						.totalKcal(roundTwo(mealTotalKcal))
+						.totalCarb(roundTwo(mealTotalCarb))
+						.totalProtein(roundTwo(mealTotalProtein))
+						.totalFat(roundTwo(mealTotalFat))
+						.totalSugar(roundTwo(mealTotalSugar))
+						.totalNatrium(roundTwo(mealTotalNatrium))
+						.foods(foodInfos) // 위에서 만든 음식 리스트 포함
+						.build());
 
 			} // end meal loop
 		}
@@ -253,52 +255,52 @@ public class ReportServiceImpl implements ReportService {
 		String comment = null;
 
 		// 분석 대기가 아닐 때만 AI 요청
-        if (!request.getIsWaited()) {
-            try {
-                // AI 요청 DTO 생성
-                AiReportRequest aiRequest = AiReportRequest.builder()
-                		// 유저 정보
-                        .stdInfo(std)
-                        .userActivityLevelDesc(userMapper.getActivityDesc(user.getActivityLevel()))
-                        .userIsDiaBetes(user.getIsDiabetes())
-                        
-                        // 하루 총합
-                        .dayTotalKcal(roundTwo(dayTotalKcal))
-                        .dayTotalCarb(roundTwo(dayTotalCarb))
-                        .dayTotalProtein(roundTwo(dayTotalProtein))
-                        .dayTotalFat(roundTwo(dayTotalFat))
-                        .dayTotalSugar(roundTwo(dayTotalSugar))
-                        .dayTotalNatrium(roundTwo(dayTotalNatrium))
-                        
-                        // 끼니 리스트 (음식 포함)
-                        .meals(mealInfos)
-                        .build();
+		if (!request.getIsWaited()) {
+			try {
+				// AI 요청 DTO 생성
+				AiReportRequest aiRequest = AiReportRequest.builder()
+						// 유저 정보
+						.stdInfo(std)
+						.userActivityLevelDesc(userMapper.getActivityDesc(user.getActivityLevel()))
+						.userIsDiaBetes(user.getIsDiabetes())
 
-                // AI 서비스 호출
-                AiReportResponse aiResponse = aiReportService.analyzeMeal(aiRequest);
+						// 하루 총합
+						.dayTotalKcal(roundTwo(dayTotalKcal))
+						.dayTotalCarb(roundTwo(dayTotalCarb))
+						.dayTotalProtein(roundTwo(dayTotalProtein))
+						.dayTotalFat(roundTwo(dayTotalFat))
+						.dayTotalSugar(roundTwo(dayTotalSugar))
+						.dayTotalNatrium(roundTwo(dayTotalNatrium))
 
-                if (aiResponse != null) {
-                    characterId = aiResponse.getCharacterId();
-                    score = aiResponse.getScore();
-                    comment = aiResponse.getComment();
-                } else {
-                    log.error("AI 분석 응답 NULL - userId: {}", userId);
-                    throw new RuntimeException("AI 분석 서버로부터 유효한 응답을 받지 못했습니다.");
-                }
+						// 끼니 리스트 (음식 포함)
+						.meals(mealInfos)
+						.build();
 
-            } catch (Exception e) {
-            	log.error("AI 레포트 분석 요청 실패", e);
-                throw new RuntimeException("AI 분석 중 오류가 발생하여 레포트 생성을 취소합니다.", e);
-            }
-        }
+				// AI 서비스 호출
+				AiReportResponse aiResponse = aiReportService.analyzeMeal(aiRequest);
+
+				if (aiResponse != null) {
+					characterId = aiResponse.getCharacterId();
+					score = aiResponse.getScore();
+					comment = aiResponse.getComment();
+				} else {
+					log.error("AI 분석 응답 NULL - userId: {}", userId);
+					throw new RuntimeException("AI 분석 서버로부터 유효한 응답을 받지 못했습니다.");
+				}
+
+			} catch (Exception e) {
+				log.error("AI 레포트 분석 요청 실패", e);
+				throw new RuntimeException("AI 분석 중 오류가 발생하여 레포트 생성을 취소합니다.", e);
+			}
+		}
 
 		// 레포트 최종 업데이트
 		report.setTotalKcal(roundTwo(dayTotalKcal));
-        report.setTotalCarb(roundTwo(dayTotalCarb));
-        report.setTotalProtein(roundTwo(dayTotalProtein));
-        report.setTotalFat(roundTwo(dayTotalFat));
-        report.setTotalSugar(roundTwo(dayTotalSugar));
-        report.setTotalNatrium(roundTwo(dayTotalNatrium));
+		report.setTotalCarb(roundTwo(dayTotalCarb));
+		report.setTotalProtein(roundTwo(dayTotalProtein));
+		report.setTotalFat(roundTwo(dayTotalFat));
+		report.setTotalSugar(roundTwo(dayTotalSugar));
+		report.setTotalNatrium(roundTwo(dayTotalNatrium));
 
 		report.setScore(score);
 		report.setComment(comment);
@@ -306,56 +308,63 @@ public class ReportServiceImpl implements ReportService {
 
 		reportMapper.updateReportResult(report); // 최종 저장
 	}
-	
+
 	@Override
-    @Transactional(readOnly = true) // 조회 전용
-    public List<Report> getReportList(String userId, int page, LocalDate startDate, LocalDate endDate) {
+	@Transactional(readOnly = true) // 조회 전용
+	public List<ReportListResponse> getReportList(String userId, int page, LocalDate startDate, LocalDate endDate) {
 		int offset = (page - 1) * LIST_LIMIT;
-		
-        return reportMapper.selectReportList(userId, offset, LIST_LIMIT, startDate, endDate);
-    }
-	
+
+		List<Report> reports = reportMapper.selectReportList(userId, offset, LIST_LIMIT, startDate, endDate);
+
+		List<ReportListResponse> responseList = new ArrayList<>();
+		for (Report report : reports) {
+			responseList.add(convertToReportListResponse(report));
+		}
+		return responseList;
+	}
+
 	@Override
-    @Transactional(readOnly = true)
-    public Report getReportDetail(String userId, int reportId) {
-        // 레포트 정보 가져오기
-        Report report = reportMapper.selectReportDetail(reportId);
+	@Transactional(readOnly = true)
+	public ReportResponse getReportDetail(String userId, int reportId) {
+		// 레포트 정보 가져오기
+		Report report = reportMapper.selectReportDetail(reportId);
 
-        // 레포트가 존재하는지 확인
-        if (report == null) {
-            throw new IllegalArgumentException("해당 레포트를 찾을 수 없습니다.");
-        }
-        
-        // 현재 접속자가 '관리자(ROLE_ADMIN)'인지 확인
-        boolean isAdmin = authHelper.isAdmin();
+		// 레포트가 존재하는지 확인
+		if (report == null) {
+			throw new IllegalArgumentException("해당 레포트를 찾을 수 없습니다.");
+		}
 
-        // 내 레포트 또는 관리자인 지 확인 (IDOR 방지)
-        // IDOR (Insecure Direct Object References, 부적절한 인가)
-        if (!report.getUserId().equals(userId) && !isAdmin) {
-            throw new IllegalArgumentException("해당 레포트에 대한 접근 권한이 없습니다.");
-        }
+		// 현재 접속자가 '관리자(ROLE_ADMIN)'인지 확인
+		boolean isAdmin = authHelper.isAdmin();
 
-        return report;
-    }
-	
+		// 내 레포트 또는 관리자인 지 확인 (IDOR 방지)
+		// IDOR (Insecure Direct Object References, 부적절한 인가)
+		if (!report.getUserId().equals(userId) && !isAdmin) {
+			throw new IllegalArgumentException("해당 레포트에 대한 접근 권한이 없습니다.");
+		}
+
+		// Domain -> DTO 변환 (계산도 수행)
+		return convertToReportResponse(report);
+	}
+
 	@Override
-    @Transactional
-    public void deleteReport(String userId, int reportId) {
-        // 레포트 생성 유저 확인
-        String reportUserId = reportMapper.findUserIdById(reportId);
-        
-        if (reportUserId == null) {
-            throw new IllegalArgumentException("해당 레포트가 존재하지 않습니다.");
-        }
+	@Transactional
+	public void deleteReport(String userId, int reportId) {
+		// 레포트 생성 유저 확인
+		String reportUserId = reportMapper.findUserIdById(reportId);
 
-        // 소유자 확인 (내 리포트만 삭제 가능)
-        if (!reportUserId.equals(userId)) {
-            throw new IllegalArgumentException("삭제 권한이 없습니다.");
-        }
+		if (reportUserId == null) {
+			throw new IllegalArgumentException("해당 레포트가 존재하지 않습니다.");
+		}
 
-        // 삭제 실행
-        reportMapper.deleteReport(reportId);
-    }
+		// 소유자 확인 (내 리포트만 삭제 가능)
+		if (!reportUserId.equals(userId)) {
+			throw new IllegalArgumentException("삭제 권한이 없습니다.");
+		}
+
+		// 삭제 실행
+		reportMapper.deleteReport(reportId);
+	}
 
 	// 헬퍼 메서드: DB의 standard 문자열("100g", "200ml")에서 숫자만 추출
 	private double parseStandard(String standard) {
@@ -369,9 +378,148 @@ public class ReportServiceImpl implements ReportService {
 			return 100.0;
 		}
 	}
-	
+
 	// 소수점 2자리까지 나오게끔 반올림 메서드
-    private double roundTwo(double value) {
-        return Math.round(value * 100.0) / 100.0;
-    }
+	private double roundTwo(double value) {
+		return Math.round(value * 100.0) / 100.0;
+	}
+
+	/**
+	 * Report Domain -> ReportResponse DTO 변환
+	 */
+	private ReportResponse convertToReportResponse(Report report) {
+		return ReportResponse.builder()
+				.id(report.getId())
+				.userId(report.getUserId())
+				.score(report.getScore())
+				.comment(report.getComment())
+				.characterId(report.getCharacterId())
+				.isWaited(report.isWaited())
+				.totalKcal(report.getTotalKcal())
+				.totalCarb(report.getTotalCarb())
+				.totalProtein(report.getTotalProtein())
+				.totalFat(report.getTotalFat())
+				.totalSugar(report.getTotalSugar())
+				.totalNatrium(report.getTotalNatrium())
+				.userAge(report.getUserAge())
+				.userHeight(report.getUserHeight())
+				.userWeight(report.getUserWeight())
+				.userGender(report.getUserGender())
+				.userActivityLevel(report.getUserActivityLevel())
+				.userStdWeight(report.getUserStdWeight())
+				.userStdKcal(report.getUserStdKcal())
+				.userStdCarb(report.getUserStdCarb())
+				.userStdProtein(report.getUserStdProtein())
+				.userStdFat(report.getUserStdFat())
+				.userStdSugar(report.getUserStdSugar())
+				.userStdNatrium(report.getUserStdNatrium())
+				.createdAt(report.getCreatedAt())
+				.meals(convertMealList(report.getMeals()))
+				.build();
+	}
+
+	private List<ReportResponse.MealResponse> convertMealList(List<Meal> meals) {
+		if (meals == null) {
+			return null;
+		}
+		List<ReportResponse.MealResponse> mealResponses = new ArrayList<>();
+		for (Meal meal : meals) {
+			mealResponses.add(convertToMealResponse(meal));
+		}
+		return mealResponses;
+	}
+
+	private ReportResponse.MealResponse convertToMealResponse(Meal meal) {
+		return ReportResponse.MealResponse.builder()
+				.id(meal.getId())
+				.mealType(meal.getMealType())
+				.totalKcal(meal.getTotalKcal())
+				.totalCarb(meal.getTotalCarb())
+				.totalProtein(meal.getTotalProtein())
+				.totalFat(meal.getTotalFat())
+				.totalSugar(meal.getTotalSugar())
+				.totalNatrium(meal.getTotalNatrium())
+				.mealFoods(convertMealFoodList(meal.getMealFoods()))
+				.build();
+	}
+
+	private List<ReportResponse.MealFoodResponse> convertMealFoodList(List<MealFood> mealFoods) {
+		if (mealFoods == null) {
+			return null;
+		}
+		List<ReportResponse.MealFoodResponse> mealFoodResponses = new ArrayList<>();
+		for (MealFood mealFood : mealFoods) {
+			mealFoodResponses.add(convertToMealFoodResponse(mealFood));
+		}
+		return mealFoodResponses;
+	}
+
+	private ReportResponse.MealFoodResponse convertToMealFoodResponse(MealFood mealFood) {
+		// 음식 이름 결정 (DB 음식 또는 사용자 음식)
+		String foodName = mealFood.getFoodName() != null ? mealFood.getFoodName() : mealFood.getUserFoodName();
+
+		// 영양소 계산 (standard 기준)
+		double baseStandard = 0;
+		double baseKcal = 0;
+		double baseCarb = 0;
+		double baseProtein = 0;
+		double baseFat = 0;
+		double baseSugar = 0;
+		double baseNatrium = 0;
+
+		// DB 음식인 경우
+		if (mealFood.getFoodCode() != null && mealFood.getFoodStandard() != null) {
+			baseStandard = parseStandard(mealFood.getFoodStandard());
+			baseKcal = mealFood.getFoodKcal() != null ? mealFood.getFoodKcal() : 0;
+			baseCarb = mealFood.getFoodCarb() != null ? mealFood.getFoodCarb() : 0;
+			baseProtein = mealFood.getFoodProtein() != null ? mealFood.getFoodProtein() : 0;
+			baseFat = mealFood.getFoodFat() != null ? mealFood.getFoodFat() : 0;
+			baseSugar = mealFood.getFoodSugar() != null ? mealFood.getFoodSugar() : 0;
+			baseNatrium = mealFood.getFoodNatrium() != null ? mealFood.getFoodNatrium() : 0;
+		}
+		// 사용자 음식인 경우
+		else if (mealFood.getUserFoodCode() != null) {
+			baseStandard = parseStandard(mealFood.getUserFoodStandard());
+			baseKcal = mealFood.getUserFoodKcal() != null ? mealFood.getUserFoodKcal() : 0;
+			baseCarb = mealFood.getUserFoodCarb() != null ? mealFood.getUserFoodCarb() : 0;
+			baseProtein = mealFood.getUserFoodProtein() != null ? mealFood.getUserFoodProtein() : 0;
+			baseFat = mealFood.getUserFoodFat() != null ? mealFood.getUserFoodFat() : 0;
+			baseSugar = mealFood.getUserFoodSugar() != null ? mealFood.getUserFoodSugar() : 0;
+			baseNatrium = mealFood.getUserFoodNatrium() != null ? mealFood.getUserFoodNatrium() : 0;
+		}
+
+		// 비례식 계산: (먹은 양 / 기준 양) * 영양소
+		double ratio = mealFood.getEatenWeight() / baseStandard;
+
+		return ReportResponse.MealFoodResponse.builder()
+				.id(mealFood.getId())
+				.eatenWeight(mealFood.getEatenWeight())
+				.foodName(foodName)
+				.foodCategory(mealFood.getFoodCategory())
+				.userFoodName(mealFood.getUserFoodName())
+				.eatenKcal(roundTwo(baseKcal * ratio))
+				.eatenCarb(roundTwo(baseCarb * ratio))
+				.eatenProtein(roundTwo(baseProtein * ratio))
+				.eatenFat(roundTwo(baseFat * ratio))
+				.eatenSugar(roundTwo(baseSugar * ratio))
+				.eatenNatrium(roundTwo(baseNatrium * ratio))
+				.build();
+	}
+
+	private ReportListResponse convertToReportListResponse(Report report) {
+		return ReportListResponse.builder()
+				.id(report.getId())
+				.score(report.getScore())
+				.comment(report.getComment())
+				.characterId(report.getCharacterId())
+				.isWaited(report.isWaited())
+				.totalKcal(report.getTotalKcal())
+				.totalCarb(report.getTotalCarb())
+				.totalProtein(report.getTotalProtein())
+				.totalFat(report.getTotalFat())
+				.totalSugar(report.getTotalSugar())
+				.totalNatrium(report.getTotalNatrium())
+				.createdAt(report.getCreatedAt())
+				.build();
+	}
 }

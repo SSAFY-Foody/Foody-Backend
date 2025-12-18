@@ -57,17 +57,44 @@
                 <result property="foodCategory" column="food_category"/>
                 <result property="userFoodName" column="user_food_name"/>
                 
-                <result property="eatenKcal" column="eaten_kcal"/>
-                <result property="eatenCarb" column="eaten_carb"/>
-                <result property="eatenProtein" column="eaten_protein"/>
-                <result property="eatenFat" column="eaten_fat"/>
-                <result property="eatenSugar" column="eaten_sugar"/>
-                <result property="eatenNatrium" column="eaten_natrium"/>
+                <!-- 원본 음식 정보 (DB foods 테이블) -->
+                <result property="foodStandard" column="food_standard"/>
+                <result property="foodKcal" column="food_kcal"/>
+                <result property="foodCarb" column="food_carb"/>
+                <result property="foodProtein" column="food_protein"/>
+                <result property="foodFat" column="food_fat"/>
+                <result property="foodSugar" column="food_sugar"/>
+                <result property="foodNatrium" column="food_natrium"/>
+                
+                <!-- 원본 음식 정보 (user_foods 테이블) -->
+                <result property="userFoodStandard" column="user_food_standard"/>
+                <result property="userFoodKcal" column="user_food_kcal"/>
+                <result property="userFoodCarb" column="user_food_carb"/>
+                <result property="userFoodProtein" column="user_food_protein"/>
+                <result property="userFoodFat" column="user_food_fat"/>
+                <result property="userFoodSugar" column="user_food_sugar"/>
+                <result property="userFoodNatrium" column="user_food_natrium"/>
             </collection>
         </collection>
     </resultMap>
     
-    <select id="selectReportList" resultType="Report">
+    <resultMap id="reportListMap" type="Report">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="score" column="score"/>
+        <result property="comment" column="comment"/>
+        <result property="isWaited" column="is_waited"/>
+        <result property="characterId" column="character_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="totalKcal" column="total_kcal"/>
+        <result property="totalCarb" column="total_carb_g"/>
+        <result property="totalProtein" column="total_protein_g"/>
+        <result property="totalFat" column="total_fat_g"/>
+        <result property="totalSugar" column="total_sugar_g"/>
+        <result property="totalNatrium" column="total_natrium_g"/>
+    </resultMap>
+    
+    <select id="selectReportList" resultMap="reportListMap">
         SELECT 
             id, 
             user_id, score, comment, is_waited, character_id, created_at,
@@ -107,15 +134,22 @@
             
             f.name AS food_name,
             f.category AS food_category,
+            f.standard AS food_standard,
+            f.kcal AS food_kcal,
+            f.carb_g AS food_carb,
+            f.protein_g AS food_protein,
+            f.fat_g AS food_fat,
+            f.sugar_g AS food_sugar,
+            f.natrium_g AS food_natrium,
             
             uf.name AS user_food_name,
-            
-            ROUND((mf.eaten_weight / 100) * COALESCE(f.kcal, uf.kcal, 0), 2) AS eaten_kcal,
-            ROUND((mf.eaten_weight / 100) * COALESCE(f.carb_g, uf.carb_g, 0), 2) AS eaten_carb,
-            ROUND((mf.eaten_weight / 100) * COALESCE(f.protein_g, uf.protein_g, 0), 2) AS eaten_protein,
-            ROUND((mf.eaten_weight / 100) * COALESCE(f.fat_g, uf.fat_g, 0), 2) AS eaten_fat,
-            ROUND((mf.eaten_weight / 100) * COALESCE(f.sugar_g, uf.sugar_g, 0), 2) AS eaten_sugar,
-            ROUND((mf.eaten_weight / 100) * COALESCE(f.natrium_g, uf.natrium_g, 0), 2) AS eaten_natrium
+            uf.standard AS user_food_standard,
+            uf.kcal AS user_food_kcal,
+            uf.carb_g AS user_food_carb,
+            uf.protein_g AS user_food_protein,
+            uf.fat_g AS user_food_fat,
+            uf.sugar_g AS user_food_sugar,
+            uf.natrium_g AS user_food_natrium
             
         FROM reports r
         LEFT JOIN meals m ON r.id = m.report_id
