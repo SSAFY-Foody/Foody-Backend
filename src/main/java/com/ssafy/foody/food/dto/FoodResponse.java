@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FoodResponse {
+	private String code; //음식 코드
 	private String name; // 음식 이름
 	private String category;
 	private String standard;
@@ -21,6 +22,7 @@ public class FoodResponse {
 	private double natrium;//나트륨 
 	
 	public FoodResponse(Food fo) {
+		this.code = fo.getCode();
 		this.name = fo.getName();
 		this.category = fo.getCategory();
 		this.standard = fo.getStandard();

@@ -9,6 +9,7 @@ import com.ssafy.foody.food.domain.Favorite;
 import com.ssafy.foody.food.domain.Food;
 import com.ssafy.foody.food.domain.UserFood;
 import com.ssafy.foody.food.dto.FavoriteResponse;
+import com.ssafy.foody.food.dto.FavoriteCodeResponse;
 import com.ssafy.foody.food.dto.FoodRequest;
 import com.ssafy.foody.food.dto.FoodResponse;
 
@@ -35,12 +36,18 @@ public interface FoodMapper {
         void deleteFavorite(int favoriteId);
 
         // 찜 목록 조회
-        List<FavoriteResponse> selectFavoriteList(String userId);
+        List<FavoriteResponse> selectFavoriteList(@Param("userId") String userId, @Param("limit") int limit, @Param("offset") int offset, @Param("filter") String filter);
+
+        // 찜 개수 조회
+        int countFavoriteList(@Param("userId") String userId, @Param("filter") String filter);
 
         // 중복 찜 방지용 확인
         Integer checkFavoriteExists(@Param("userId") String userId,
                         @Param("foodCode") String foodCode,
                         @Param("userFoodCode") Integer userFoodCode);
+
+        // 모든 찜 코드 조회 (isFavorite 체크용)
+        List<FavoriteCodeResponse> selectAllFavoriteCodes(@Param("userId") String userId);
 
         // Food Table 에 음식 정보 입력 (관리자 권한 (ADMIN))
         void addFood(FoodRequest food);
@@ -50,5 +57,11 @@ public interface FoodMapper {
 
         // 카테고리 목록 조회 (DISTINCT)
         List<String> selectDistinctCategories();
+
+        // 사용자 입력 음식 목록 조회
+        List<FoodResponse> selectUserFoodList(@Param("userId") String userId, @Param("limit") int limit, @Param("offset") int offset);
+
+        // 사용자 입력 음식 개수 조회
+        int countUserFoodList(@Param("userId") String userId);
 
 }

@@ -18,6 +18,12 @@
 		<result column="natrium_g" property="natrium" />
 	</resultMap>
 
+    <resultMap id="favoriteCodeMap" type="com.ssafy.foody.food.dto.FavoriteCodeResponse">
+        <id column="favoriteId" property="favoriteId"/>
+        <result column="foodCode" property="foodCode"/>
+        <result column="userFoodCode" property="userFoodCode"/>
+    </resultMap>
+
 	<select id="selectFoodList" resultMap="foodResultMap">
 		SELECT
 		code, name, category, standard, kcal,
@@ -79,7 +85,7 @@
 		)
 	</insert>
 	
-	<insert id="insertFavorite" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertFavorite" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO favorites (user_id, food_code, user_food_code)
         VALUES (
             #{userId}, 
@@ -102,22 +108,39 @@
         SELECT 
             fav.id AS favoriteId,
             fav.food_code AS foodCode,
-            NULL AS userFoodCode,
-            f.name, f.standard, f.kcal, f.carb_g AS carb, f.protein_g AS protein, f.fat_g AS fat, f.sugar_g AS sugar, f.natrium_g AS natrium
-        FROM favorites fav
-        JOIN foods f ON fav.food_code = f.code
-        WHERE fav.user_id = #{userId}
-
-        UNION ALL
-
-        SELECT 
-            fav.id AS favoriteId,
-            NULL AS foodCode,
             fav.user_food_code AS userFoodCode,
-            uf.name, uf.standard, uf.kcal, uf.carb_g AS carb, uf.protein_g AS protein, uf.fat_g AS fat, uf.sugar_g AS sugar, uf.natrium_g AS natrium
+            COALESCE(f.name, uf.name) as name,
+            COALESCE(f.standard, uf.standard) as standard,
+            COALESCE(f.kcal, uf.kcal) as kcal,
+            COALESCE(f.carb_g, uf.carb_g) as carb,
+            COALESCE(f.protein_g, uf.protein_g) as protein,
+            COALESCE(f.fat_g, uf.fat_g) as fat,
+            COALESCE(f.sugar_g, uf.sugar_g) as sugar,
+            COALESCE(f.natrium_g, uf.natrium_g) as natrium
         FROM favorites fav
-        JOIN user_foods uf ON fav.user_food_code = uf.code
+        LEFT JOIN foods f ON fav.food_code = f.code
+        LEFT JOIN user_foods uf ON fav.user_food_code = uf.code
         WHERE fav.user_id = #{userId}
+        <if test='filter == "GENERAL"'>
+            AND fav.user_food_code IS NULL
+        </if>
+        <if test='filter == "CUSTOM"'>
+            AND fav.user_food_code IS NOT NULL
+        </if>
+        ORDER BY fav.id DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <select id="countFavoriteList" resultType="int">
+        SELECT COUNT(*)
+        FROM favorites
+        WHERE user_id = #{userId}
+        <if test='filter == "GENERAL"'>
+            AND user_food_code IS NULL
+        </if>
+        <if test='filter == "CUSTOM"'>
+            AND user_food_code IS NOT NULL
+        </if>
     </select>
     
     <insert id="addFood">
@@ -137,6 +160,36 @@
         FROM foods
         WHERE category IS NOT NULL AND category != ''
         ORDER BY category ASC
+    </select>
+
+    <select id="selectUserFoodList" resultMap="foodResultMap">
+        SELECT 
+            CAST(code AS CHAR) as code,
+            name, 
+            '직접 입력' as category, 
+            standard, 
+            kcal,
+            carb_g, 
+            protein_g, 
+            fat_g, 
+            sugar_g, 
+            natrium_g
+        FROM user_foods
+        WHERE regist_user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <select id="countUserFoodList" resultType="int">
+        SELECT COUNT(*)
+        FROM user_foods
+        WHERE regist_user_id = #{userId}
+    </select>
+
+    <select id="selectAllFavoriteCodes" resultMap="favoriteCodeMap">
+        SELECT id as favoriteId, food_code as foodCode, user_food_code as userFoodCode
+        FROM favorites
+        WHERE user_id = #{userId}
     </select>
 
 </mapper>

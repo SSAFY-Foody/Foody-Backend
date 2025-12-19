@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.foody.common.dto.PageResponse;
 import com.ssafy.foody.food.dto.AiFoodResponse;
+import com.ssafy.foody.food.dto.FavoriteCodeResponse;
 import com.ssafy.foody.food.dto.FavoriteRequest;
 import com.ssafy.foody.food.dto.FavoriteResponse;
 import com.ssafy.foody.food.dto.FoodResponse;
@@ -24,7 +25,6 @@ import com.ssafy.foody.food.service.AiFoodService;
 import com.ssafy.foody.food.service.FoodService;
 
 import jakarta.validation.Valid;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -121,11 +121,41 @@ public class FoodController {
      * GET /food/auth/favorite
      */
     @GetMapping("/auth/favorite")
-    public ResponseEntity<List<FavoriteResponse>> getFavoriteList(
+    public ResponseEntity<PageResponse<FavoriteResponse>> getFavoriteList(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) String filter) {
+        if (userDetails == null)
+            return ResponseEntity.status(401).build();
+
+        return ResponseEntity.ok(foodService.getFavoriteList(userDetails.getUsername(), page, filter));
+    }
+
+    /**
+     * 모든 찜 코드 조회 (Check용)
+     * GET /food/auth/favorite/codes
+     */
+    @GetMapping("/auth/favorite/codes")
+    public ResponseEntity<List<FavoriteCodeResponse>> getAllFavoriteCodes(
             @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null)
             return ResponseEntity.status(401).build();
 
-        return ResponseEntity.ok(foodService.getFavoriteList(userDetails.getUsername()));
+        return ResponseEntity.ok(foodService.getAllFavoriteCodes(userDetails.getUsername()));
     }
+
+    /**
+     * 사용자 입력 음식 목록 조회
+     * GET /food/auth/user-food
+     */
+    @GetMapping("/auth/user-food")
+    public ResponseEntity<PageResponse<FoodResponse>> getUserFoodList(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "1") int page) {
+        if (userDetails == null)
+            return ResponseEntity.status(401).build();
+
+        return ResponseEntity.ok(foodService.getUserFoodList(userDetails.getUsername(), page));
+    }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.foody.common.dto.PageResponse;
 import com.ssafy.foody.food.domain.Favorite;
+import com.ssafy.foody.food.dto.FavoriteCodeResponse;
 import com.ssafy.foody.food.dto.FavoriteResponse;
 import com.ssafy.foody.food.dto.FoodResponse;
 import com.ssafy.foody.food.mapper.FoodMapper;
@@ -67,6 +68,7 @@ public class FoodServiceImpl implements FoodService {
 
         // 유효성 검사
         if (foodCode != null && userFoodCode != null) {
+        	log.debug("foodCode: {}, userFoodCode: {}", foodCode, userFoodCode);
             throw new IllegalArgumentException("찜할 음식 정보가 잘못 됐습니다.");
         }
 
@@ -94,13 +96,49 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<FavoriteResponse> getFavoriteList(String userId) {
-        return foodMapper.selectFavoriteList(userId);
+    public PageResponse<FavoriteResponse> getFavoriteList(String userId, int page, String filter) {
+        int offset = (page - 1) * LIST_LIMIT;
+        
+        List<FavoriteResponse> list = foodMapper.selectFavoriteList(userId, LIST_LIMIT, offset, filter);
+        int totalCount = foodMapper.countFavoriteList(userId, filter);
+        int totalPages = (int) Math.ceil((double) totalCount / LIST_LIMIT);
+        
+        return PageResponse.<FavoriteResponse>builder()
+                .content(list)
+                .page(page)
+                .size(LIST_LIMIT)
+                .totalElements(totalCount)
+                .totalPages(totalPages)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FavoriteCodeResponse> getAllFavoriteCodes(String userId) {
+        return foodMapper.selectAllFavoriteCodes(userId);
     }
 
     @Override
     public List<String> getCategories() {
         return foodMapper.selectDistinctCategories();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<FoodResponse> getUserFoodList(String userId, int page) {
+        int offset = (page - 1) * LIST_LIMIT;
+        
+        List<FoodResponse> list = foodMapper.selectUserFoodList(userId, LIST_LIMIT, offset);
+        int totalCount = foodMapper.countUserFoodList(userId);
+        int totalPages = (int) Math.ceil((double) totalCount / LIST_LIMIT);
+        
+        return PageResponse.<FoodResponse>builder()
+                .content(list)
+                .page(page)
+                .size(LIST_LIMIT)
+                .totalElements(totalCount)
+                .totalPages(totalPages)
+                .build();
     }
 
 }
