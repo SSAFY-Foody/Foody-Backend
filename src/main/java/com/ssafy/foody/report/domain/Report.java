@@ -37,6 +37,7 @@ public class Report {
     private Double userWeight;
     private String userGender;
     private Integer userActivityLevel;
+    private boolean userIsDiabetes; // DB에는 없지만 User테이블 조인해서 가져옴
 
     // 생성 당시 유저 표준 정보
     private Double userStdWeight;
