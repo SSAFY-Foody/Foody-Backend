@@ -11,4 +11,11 @@ public class WaitingReportResponse {
 	private int id;
 	private String userId;
 	private LocalDateTime createdAt;
+	private String userName;
+	private Double totalKcal;
+	private Double totalCarb;
+	private Double totalProtein;
+	private Double totalFat;
+	private Double totalSugar;
+	private Double totalNatrium;
 }

@@ -36,6 +36,7 @@ public class ReportResponse {
     private Double userWeight;
     private String userGender;
     private Integer userActivityLevel;
+    private boolean userIsDiabetes;
 
     // 생성 당시 유저 표준 정보
     private Double userStdWeight;
@@ -88,7 +89,7 @@ public class ReportResponse {
         private Double eatenSugar;
         private Double eatenNatrium;
     }
-    
+
     // 기본형 Getter/Setter 직접 선언 (네이밍 불일치 해결) - 혹은 Boolean 써도 됨
     public boolean getIsWaited() {
         return isWaited;

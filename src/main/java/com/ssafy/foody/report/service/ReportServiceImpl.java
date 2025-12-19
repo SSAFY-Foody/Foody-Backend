@@ -422,6 +422,7 @@ public class ReportServiceImpl implements ReportService {
 				.userWeight(report.getUserWeight())
 				.userGender(report.getUserGender())
 				.userActivityLevel(report.getUserActivityLevel())
+				.userIsDiabetes(report.isUserIsDiabetes())
 				.userStdWeight(report.getUserStdWeight())
 				.userStdKcal(report.getUserStdKcal())
 				.userStdCarb(report.getUserStdCarb())

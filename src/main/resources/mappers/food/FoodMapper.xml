@@ -143,6 +143,22 @@
         </if>
     </select>
     
+    <update id="updateFood" parameterType="FoodRequest">
+        UPDATE foods
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="standard != null">standard = #{standard},</if>
+            <if test="kcal != null">kcal = #{kcal},</if>
+            <if test="carb != null">carb_g = #{carb},</if>
+            <if test="protein != null">protein_g = #{protein},</if>
+            <if test="fat != null">fat_g = #{fat},</if>
+            <if test="sugar != null">sugar_g = #{sugar},</if>
+            <if test="natrium != null">natrium_g = #{natrium},</if>
+        </set>
+        WHERE code = #{code}
+    </update>
+
     <insert id="addFood">
     	INSERT INTO foods(code, name, category, standard, kcal, carb_g, protein_g, fat_g, sugar_g, natrium_g)
     	VALUES (

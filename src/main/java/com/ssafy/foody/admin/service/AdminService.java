@@ -9,24 +9,27 @@ import com.ssafy.foody.admin.dto.UpdateWaitingReportRequest;
 import com.ssafy.foody.food.dto.FoodRequest;
 
 public interface AdminService {
-	//권한 수정
+	// 권한 수정
 	void updateUserRole(String userId, String role);
-	
-	//Foods테이블 새로운 값 삽입
+
+	// Foods테이블 새로운 값 삽입
 	void addFood(FoodRequest food);
-	
-	//Foods 테이블에 있는 값 삭제하기
+
+	// Foods테이블 음식 정보 수정
+	void updateFood(FoodRequest food);
+
+	// Foods 테이블에 있는 값 삭제하기
 	void deleteFood(String code);
-	
-	//Activity Level 수정
+
+	// Activity Level 수정
 	void updateActivityLevelByLevel(UpdateActivityLevelRequest activity);
-	
-	//Activity Level 전체 조회
+
+	// Activity Level 전체 조회
 	List<ActivityLevelResponse> findAllActivityLevels();
-	
-	//레포트 생성 대기자 전체 조회
+
+	// 레포트 생성 대기자 전체 조회
 	List<WaitingReportResponse> findAllWaitingReport(int page);
-	
-	//분석 요청 레포트 수정
+
+	// 분석 요청 레포트 수정
 	void updateWaitingReport(UpdateWaitingReportRequest updateReportRequest);
-}	
+}

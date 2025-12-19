@@ -18,6 +18,7 @@
 		<result property="userWeight" column="user_weight" />
 		<result property="userGender" column="user_gender" />
 		<result property="userActivityLevel" column="user_activity_level" />
+		<result property="userIsDiabetes" column="user_is_diabetes" />
         
         <result property="userStdWeight" column="user_std_weight"/>
         <result property="userStdKcal" column="user_std_kcal"/>
@@ -132,6 +133,7 @@
         SELECT 
             r.id AS report_id, r.user_id, r.score, r.comment, r.is_waited, r.character_id, r.created_at,
             r.user_age, r.user_height, r.user_weight, r.user_gender, r.user_activity_level,
+            u.is_diabetes AS user_is_diabetes,
             r.user_std_weight, r.user_std_kcal, r.user_std_carb_g, r.user_std_protein_g,
             r.user_std_fat_g, r.user_std_sugar_g, r.user_std_natrium_g,
             r.total_kcal AS r_total_kcal, r.total_carb_g AS r_total_carb_g, 
@@ -165,6 +167,7 @@
             uf.natrium_g AS user_food_natrium
             
         FROM reports r
+        JOIN users u ON r.user_id = u.id
         LEFT JOIN meals m ON r.id = m.report_id
         LEFT JOIN meal_foods mf ON m.id = mf.meal_id
         LEFT JOIN foods f ON mf.food_code = f.code
@@ -281,10 +284,14 @@
     </delete>
     
     <select id="findAllWaitingReport" resultType="WaitingReportResponse">
-    	SELECT id, user_id as userId, created_at as createdAt
-    	FROM reports
-    	WHERE is_waited = true
-    	ORDER BY createdAt ASC
+    	SELECT r.id, r.user_id as userId, u.name as userName, r.created_at as createdAt,
+    	       r.total_kcal as totalKcal, r.total_carb_g as totalCarb, 
+    	       r.total_protein_g as totalProtein, r.total_fat_g as totalFat,
+    	       r.total_sugar_g as totalSugar, r.total_natrium_g as totalNatrium
+    	FROM reports r
+    	JOIN users u ON r.user_id = u.id
+    	WHERE r.is_waited = true
+    	ORDER BY r.created_at ASC
     	LIMIT #{limit} OFFSET #{offset}
     </select>
     
