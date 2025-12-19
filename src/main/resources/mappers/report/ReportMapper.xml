@@ -291,7 +291,7 @@
     	FROM reports r
     	JOIN users u ON r.user_id = u.id
     	WHERE r.is_waited = true
-    	ORDER BY r.created_at DESC
+    	ORDER BY r.created_at ASC
     	LIMIT #{limit} OFFSET #{offset}
     </select>
     
