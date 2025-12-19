@@ -26,20 +26,20 @@ public class FoodRequest {
     private String standard;
 
     @PositiveOrZero(message = "kcal은 0 이상이어야 합니다.")
-    private double kcal;
+    private Double kcal;
 
     @PositiveOrZero(message = "carb은 0 이상이어야 합니다.")
-    private double carb;
+    private Double carb;
 
     @PositiveOrZero(message = "protein은 0 이상이어야 합니다.")
-    private double protein;
+    private Double protein;
 
     @PositiveOrZero(message = "fat은 0 이상이어야 합니다.")
-    private double fat;
+    private Double fat;
 
     @PositiveOrZero(message = "sugar은 0 이상이어야 합니다.")
-    private double sugar;
+    private Double sugar;
 
     @PositiveOrZero(message = "natrium은 0 이상이어야 합니다.")
-    private double natrium;
+    private Double natrium;
 }

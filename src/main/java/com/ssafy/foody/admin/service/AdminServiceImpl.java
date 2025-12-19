@@ -94,6 +94,12 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	@Transactional
+	public void updateFood(FoodRequest food) {
+		foodMapper.updateFood(food);
+	}
+
+	@Override
+	@Transactional
 	public void deleteFood(String code) {
 		// 유효성 검사
 		if (code == null) {

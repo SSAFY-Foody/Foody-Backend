@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.foody.admin.dto.ActivityLevelResponse;
-import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.admin.dto.UpdateActivityLevelRequest;
 import com.ssafy.foody.admin.dto.UpdateRoleRequest;
 import com.ssafy.foody.admin.dto.UpdateWaitingReportRequest;
+import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.admin.service.AdminService;
 import com.ssafy.foody.food.dto.FoodRequest;
 
@@ -60,6 +60,19 @@ public class AdminController {
 	public ResponseEntity<String> addFood(@Valid @RequestBody FoodRequest request) {
 		adminService.addFood(request);
 		return ResponseEntity.ok("음식이 성공적으로 등록되었습니다");
+	}
+
+	/**
+	 * 음식 수정 (관리자만 접근 가능)
+	 * PUT /admin
+	 * 요청 Body(raw)
+	 * code, name, category, standard, kcal, carb, protein, fat, sugar, natrium
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
+	@PatchMapping("/food")
+	public ResponseEntity<String> updateFood(@Valid @RequestBody FoodRequest request) {
+		adminService.updateFood(request);
+		return ResponseEntity.ok("음식이 성공적으로 수정되었습니다");
 	}
 
 	/**

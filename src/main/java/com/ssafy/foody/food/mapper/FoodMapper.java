@@ -36,7 +36,8 @@ public interface FoodMapper {
         void deleteFavorite(int favoriteId);
 
         // 찜 목록 조회
-        List<FavoriteResponse> selectFavoriteList(@Param("userId") String userId, @Param("limit") int limit, @Param("offset") int offset, @Param("filter") String filter);
+        List<FavoriteResponse> selectFavoriteList(@Param("userId") String userId, @Param("limit") int limit,
+                        @Param("offset") int offset, @Param("filter") String filter);
 
         // 찜 개수 조회
         int countFavoriteList(@Param("userId") String userId, @Param("filter") String filter);
@@ -52,6 +53,9 @@ public interface FoodMapper {
         // Food Table 에 음식 정보 입력 (관리자 권한 (ADMIN))
         void addFood(FoodRequest food);
 
+        // Food Table 에 음식 정보 수정 (관리자 권한 (ADMIN))
+        void updateFood(FoodRequest food);
+
         // Food Table 에 음식 정보 삭제 (관리자 권한 (ADMIN))
         void deleteFoodByCode(@Param("code") String code);
 
@@ -59,7 +63,8 @@ public interface FoodMapper {
         List<String> selectDistinctCategories();
 
         // 사용자 입력 음식 목록 조회
-        List<FoodResponse> selectUserFoodList(@Param("userId") String userId, @Param("limit") int limit, @Param("offset") int offset);
+        List<FoodResponse> selectUserFoodList(@Param("userId") String userId, @Param("limit") int limit,
+                        @Param("offset") int offset);
 
         // 사용자 입력 음식 개수 조회
         int countUserFoodList(@Param("userId") String userId);
