@@ -55,4 +55,11 @@ public class ChatServiceImpl implements ChatService {
     public List<ChatRoomResponse> getChatRooms(String expertId) {
         return chatMapper.findChatRoomsByExpertId(expertId);
     }
+
+    @Override
+    @Transactional
+    public void deleteChatRoom(String roomId) {
+        chatMapper.deleteChatMessages(roomId);
+        chatMapper.deleteChatRoom(roomId);
+    }
 }

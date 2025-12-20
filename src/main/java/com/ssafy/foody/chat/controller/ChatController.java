@@ -6,6 +6,9 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +21,6 @@ import com.ssafy.foody.chat.domain.ChatRoom;
 import com.ssafy.foody.chat.dto.ChatRoomRequest;
 import com.ssafy.foody.chat.dto.ChatRoomResponse;
 import com.ssafy.foody.chat.service.ChatService;
-
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -59,4 +59,10 @@ public class ChatController {
         messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
     }
 
+    // 채팅방 삭제 (종료)
+    @DeleteMapping("/room/{roomId}")
+    public ResponseEntity<Void> deleteChatRoom(@PathVariable String roomId) {
+        chatService.deleteChatRoom(roomId);
+        return ResponseEntity.ok().build();
+    }
 }

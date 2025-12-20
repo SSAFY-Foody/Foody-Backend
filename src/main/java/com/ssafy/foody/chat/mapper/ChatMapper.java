@@ -20,4 +20,8 @@ public interface ChatMapper {
     List<ChatMessage> findMessagesByRoomId(@Param("roomId") String roomId); // 채팅 기록 불러오기
 
     List<ChatRoomResponse> findChatRoomsByExpertId(@Param("expertId") String expertId); // 전문가의 채팅방 목록 조회
+
+    void deleteChatMessages(@Param("roomId") String roomId); // 메세지 삭제
+
+    void deleteChatRoom(@Param("roomId") String roomId); // 채팅방 삭제
 }
