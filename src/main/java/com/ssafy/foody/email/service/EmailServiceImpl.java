@@ -117,7 +117,7 @@ public class EmailServiceImpl implements EmailService {
                                                     회원가입을 요청하지 않으셨다면 이 메일을 무시하셔도 됩니다.
                                                 </p>
                                                 <p style="margin: 15px 0 0 0; color: #9ca3af; font-size: 13px;">
-                                                    © 2024 Foody. All rights reserved.
+                                                    © 2025 SSAFY-Foody. All rights reserved.
                                                 </p>
                                             </td>
                                         </tr>
@@ -257,7 +257,7 @@ public class EmailServiceImpl implements EmailService {
                                                     비밀번호 찾기를 요청하지 않으셨다면 즉시 고객센터로 문의해주세요.
                                                 </p>
                                                 <p style="margin: 15px 0 0 0; color: #9ca3af; font-size: 13px;">
-                                                    © 2024 Foody. All rights reserved.
+                                                    © 2025 SSAFY-Foody. All rights reserved.
                                                 </p>
                                             </td>
                                         </tr>
