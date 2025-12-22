@@ -55,13 +55,14 @@ Foody는 크게 세 가지의 서버로 구성되어 있습니다.
 # Foody-Backend
 
 ### 핵심 기술
-- **Java 17**
-- **Spring Boot 3**
+- **Spring Boot**
 - **MyBatis**: SQL Mapper Framework
 - **MySQL**: RDBMS
+- **Spring Security**: 인증/인가
 - **JWT**: 인증 토큰 관리
 - **OAuth2.0**: 구글, 카카오 인증
 - **WebSocket**: 실시간 채팅
+- **WebClient**: 외부 API (AI 서버) 통신
 
 ---
 
@@ -99,6 +100,38 @@ spring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID} 
 spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET} # 구글 클라이언트 비밀번호
 spring.security.oauth2.client.registration.kakao.client-id=${KAKAO_REST_API_KEY} # 카카오 REST API 키
 ```
+---
+
+## 🛠️ 빌드 및 실행 (Build & Run)
+
+### 전제 조건 (Prerequisites)
+- Java 17
+- Maven
+
+### 실행 방법 (How to Run)
+터미널에서 아래 명령어를 실행하여 프로젝트를 빌드하고 실행할 수 있습니다.
+
+```bash
+# 프로젝트 클론
+git clone https://github.com/SSAFY-Foody/Foody-Backend.git
+
+# 프로젝트 디렉토리로 이동
+cd Foody-Backend
+
+# Maven 빌드 및 실행
+./mvnw spring-boot:run
+```
+
+---
+
+## 📘 API 문서 (API Documentation)
+서버가 실행 중일 때, 아래 주소로 접속하여 API 명세를 확인할 수 있습니다.
+
+- **Swagger UI**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+- API 문서 (일부)
+![Swagger API docs](./github_asset/img/Foody_Swagger_API.png)
+
 
 ---
 
@@ -134,8 +167,8 @@ src/main/java/com/ssafy/foody/
 │
 ├── common/        # 공통 모듈
 │   ├── config/        # 전역 설정 (Swagger, WebMvc 등)
-│   ├── exception/     # 전역 예외 처리
-│   └── model/         # 공통 응답 모델
+│   ├── dto/           # 공통 응답 DTO (페이지네이션)
+│   └── handler/       # 공통 핸들러 (GlobalExceptionHandler)
 │
 ├── email/         # 이메일 서비스
 │   ├── controller/    # 이메일 인증 API
@@ -164,3 +197,8 @@ src/main/java/com/ssafy/foody/
     ├── mapper/        # 사용자 DB 매퍼
     └── service/       # 사용자 관리 서비스
 ```
+
+---
+
+## 🗄️ ER 다이어그램 (ER Diagram)
+![ER Diagram](./github_asset/img/Foody_ER_Diagram.png)
