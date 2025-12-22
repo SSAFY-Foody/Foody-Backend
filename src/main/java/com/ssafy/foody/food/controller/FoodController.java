@@ -24,6 +24,9 @@ import com.ssafy.foody.food.dto.FoodResponse;
 import com.ssafy.foody.food.service.AiFoodService;
 import com.ssafy.foody.food.service.FoodService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +35,13 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/food")
 @RequiredArgsConstructor
+@Tag(name = "Food", description = "음식 및 찜하기 API")
 public class FoodController {
 
     private final FoodService foodService;
     private final AiFoodService aiFoodService;
 
+    @Operation(summary = "음식 검색 및 목록 조회", description = "음식을 검색하거나 전체 목록을 조회합니다. (페이지네이션)")
     @GetMapping("/")
     public ResponseEntity<PageResponse<FoodResponse>> getFoodList(
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -61,6 +66,7 @@ public class FoodController {
      * 음식 카테고리 목록 조회 (Public)
      * 인증 없이 조회 가능
      */
+    @Operation(summary = "음식 카테고리 조회", description = "전체 음식 카테고리 목록을 조회합니다.")
     @GetMapping("/categories")
     public ResponseEntity<List<String>> getCategories() {
         List<String> categories = foodService.getCategories();
@@ -72,6 +78,7 @@ public class FoodController {
      * POST /food/analyze
      * form-data key: "image" (파일)
      */
+    @Operation(summary = "음식 이미지 분석", description = "음식 사진을 업로드하여 AI 분석 결과를 받습니다.")
     @PostMapping(value = "/analyze", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AiFoodResponse> analyzeFoodImage(
             @RequestParam("image") MultipartFile image) {
@@ -86,6 +93,7 @@ public class FoodController {
      * 찜 목록 추가
      * POST /food/auth/favorite
      */
+    @Operation(summary = "찜 목록 추가", description = "음식을 찜 목록에 추가합니다.")
     @PostMapping("/auth/favorite")
     public ResponseEntity<String> addFavorite(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -105,6 +113,7 @@ public class FoodController {
      * 찜 목록 삭제
      * DELETE /food/auth/favorite?favoriteId=...
      */
+    @Operation(summary = "찜 목록 삭제", description = "찜 목록에서 음식을 제거합니다.")
     @DeleteMapping("/auth/favorite")
     public ResponseEntity<String> deleteFavorite(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -120,6 +129,7 @@ public class FoodController {
      * 찜 목록 조회
      * GET /food/auth/favorite
      */
+    @Operation(summary = "찜 목록 조회", description = "나의 찜 목록을 조회합니다.")
     @GetMapping("/auth/favorite")
     public ResponseEntity<PageResponse<FavoriteResponse>> getFavoriteList(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -135,6 +145,7 @@ public class FoodController {
      * 모든 찜 코드 조회 (Check용)
      * GET /food/auth/favorite/codes
      */
+    @Operation(summary = "전체 찜 코드 조회", description = "내가 찜한 모든 음식의 코드를 조회합니다.")
     @GetMapping("/auth/favorite/codes")
     public ResponseEntity<List<FavoriteCodeResponse>> getAllFavoriteCodes(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -148,6 +159,7 @@ public class FoodController {
      * 사용자 입력 음식 목록 조회
      * GET /food/auth/user-food
      */
+    @Operation(summary = "사용자 직접 입력 음식 조회", description = "내가 직접 등록한 음식 목록을 조회합니다.")
     @GetMapping("/auth/user-food")
     public ResponseEntity<PageResponse<FoodResponse>> getUserFoodList(
             @AuthenticationPrincipal UserDetails userDetails,

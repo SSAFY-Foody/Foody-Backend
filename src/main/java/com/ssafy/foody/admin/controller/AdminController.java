@@ -24,6 +24,9 @@ import com.ssafy.foody.admin.dto.WaitingReportResponse;
 import com.ssafy.foody.admin.service.AdminService;
 import com.ssafy.foody.food.dto.FoodRequest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@Tag(name = "Admin", description = "관리자 전용 API")
 public class AdminController {
 	private final AdminService adminService;
 
@@ -42,6 +46,7 @@ public class AdminController {
 	 * userID : 권한을 변경할 아이디
 	 * role : 지정하려는 권한
 	 */
+	@Operation(summary = "유저 권한 수정", description = "특정 유저의 권한(ROLE)을 변경합니다.")
 	@PreAuthorize("hasRole('ADMIN')")
 	@PatchMapping
 	public ResponseEntity<String> updateUserRole(
@@ -57,6 +62,7 @@ public class AdminController {
 	 * 요청 Body(raw)
 	 * code, name, category, standard, kcal, carb, protein, fat, sugar, natrium
 	 */
+	@Operation(summary = "음식 등록", description = "새로운 음식을 DB에 등록합니다.")
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<String> addFood(@Valid @RequestBody FoodRequest request) {
@@ -70,6 +76,7 @@ public class AdminController {
 	 * 요청 Body(raw)
 	 * code, name, category, standard, kcal, carb, protein, fat, sugar, natrium
 	 */
+	@Operation(summary = "음식 수정", description = "기존 음식 정보를 수정합니다.")
 	@PreAuthorize("hasRole('ADMIN')")
 	@PatchMapping("/food")
 	public ResponseEntity<String> updateFood(@Valid @RequestBody FoodRequest request) {
@@ -81,6 +88,7 @@ public class AdminController {
 	 * 음식 삭제
 	 * DELETE /admin/{code}
 	 */
+	@Operation(summary = "음식 삭제", description = "음식 코드로 음식을 삭제합니다.")
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{code}")
 	public ResponseEntity<String> deleteFood(@PathVariable String code) {
@@ -94,6 +102,7 @@ public class AdminController {
 	 * 요청 Body(raw)
 	 * level, value, description
 	 */
+	@Operation(summary = "활동 레벨 정보 수정", description = "활동 레벨(Activity Level)의 가중치 및 설명을 수정합니다.")
 	@PreAuthorize("hasRole('ADMIN')")
 	@PatchMapping("/activitylevel")
 	public ResponseEntity<String> updateActivityLevel(@Valid @RequestBody UpdateActivityLevelRequest request) {
@@ -105,6 +114,7 @@ public class AdminController {
 	 * Activity level 테이블 조회
 	 * GET /admin/activitylevel
 	 */
+	@Operation(summary = "활동 레벨 목록 조회", description = "모든 활동 레벨 정보를 조회합니다.")
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/activitylevel")
 	public ResponseEntity<List<ActivityLevelResponse>> findAllActivityLevels() {
@@ -121,6 +131,7 @@ public class AdminController {
 	 * Reports 테이블에서 레포트 생성 대기자 조회
 	 * GET /admin/report?page={페이지수}
 	 */
+	@Operation(summary = "분석 대기 레포트 조회", description = "전문가 분석이 필요한 대기 중인 레포트 목록을 조회합니다.")
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/report")
 	public ResponseEntity<List<WaitingReportResponse>> findAllWaitingReport(
@@ -136,6 +147,7 @@ public class AdminController {
 	 * 요청 Body(raw)
 	 * id, score, character_id, comment
 	 */
+	@Operation(summary = "전문가 분석 작성", description = "전문가가 레포트에 대한 분석 내용(점수, 코멘트 등)을 작성합니다.")
 	@PreAuthorize("hasRole('ADMIN')")
 	@PatchMapping("/report")
 	public ResponseEntity<String> updateWaitingReport(

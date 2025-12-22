@@ -14,6 +14,9 @@ import com.ssafy.foody.email.service.EmailService;
 
 import jakarta.validation.Valid;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/email")
 @RequiredArgsConstructor
+@Tag(name = "Email", description = "이메일 인증 API")
 public class EmailController {
 
     private final EmailService emailService;
@@ -30,6 +34,7 @@ public class EmailController {
      * POST /email/send
      * Body: { "email": "test@naver.com" }
      */
+    @Operation(summary = "인증 코드 발송", description = "이메일로 인증 코드를 발송합니다.")
     @PostMapping("/send")
     public ResponseEntity<String> sendEmail(@Valid @RequestBody EmailRequest request) {
         emailService.sendVerificationCode(request.getEmail());
@@ -41,6 +46,7 @@ public class EmailController {
      * POST /email/verify
      * Body: { "email": "test@naver.com", "code": "123456" }
      */
+    @Operation(summary = "인증 코드 검증", description = "발송된 이메일 인증 코드를 검증합니다.")
     @PostMapping("/verify")
     public ResponseEntity<String> verifyEmail(@Valid @RequestBody EmailRequest request) {
         boolean isVerified = emailService.verifyCode(request.getEmail(), request.getCode());
@@ -54,6 +60,7 @@ public class EmailController {
 
     // 이메일 중복 체크
     // GET /email/check-email?email=test@naver.com
+    @Operation(summary = "이메일 중복 확인", description = "이미 가입된 이메일인지 확인합니다.")
     @GetMapping("/check-email")
     public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
         boolean exists = emailService.isEmailDuplicate(email);
