@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,6 +49,7 @@ public class ChatController {
 
     // 전문가의 채팅방 목록 조회
     @GetMapping("/expert/rooms")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ChatRoomResponse>> getExpertRooms(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(chatService.getChatRooms(userDetails.getUsername()));
     }

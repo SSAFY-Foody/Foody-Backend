@@ -65,7 +65,7 @@ public class SecurityConfig {
 						// '/food/auth/**' 패턴은 로그인 필요 (찜하기, 삭제, 조회)
 						.requestMatchers("/food/auth/**").authenticated()
 						// admin 전용 유저 API
-						.requestMatchers("/admin/**").hasRole("ADMIN")
+						.requestMatchers("/admin/**", "/chat/expert/**").hasRole("ADMIN")
 						// 권한 없이 주소 허용
 						.requestMatchers("/error/**", "/account/**", "/oauth2/**", "/email/**", "/login/**", "/food/**",
 								"/favicon.ico", "/character/**", "/ws-stomp/**")

@@ -32,7 +32,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal UserDetails userDetails) {
         String userId = userDetails.getUsername(); 
-        log.info("내 정보 조회 요청: {}", userId);
+        log.debug("내 정보 조회 요청: {}", userId);
 
         // DB에서 최신 유저 정보 가져오기
         UserResponse response = userService.findById(userId);
