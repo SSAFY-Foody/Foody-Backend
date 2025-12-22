@@ -24,6 +24,7 @@ public class Report {
     private Integer characterId; // 캐릭터 ID
 
     private boolean isWaited; // 전문가 분석 요청 여부
+    private boolean isShared; // 공유 여부
 
     // 하루 섭취 영양소 총합
     private Double totalKcal;
@@ -62,5 +63,13 @@ public class Report {
 
     public void setIsWaited(boolean isWaited) {
         this.isWaited = isWaited;
+    }
+
+    public boolean getIsShared() {
+        return isShared;
+    }
+
+    public void setIsShared(boolean isShared) {
+        this.isShared = isShared;
     }
 }

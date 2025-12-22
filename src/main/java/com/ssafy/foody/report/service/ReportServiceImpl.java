@@ -10,17 +10,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.foody.auth.helper.AuthHelper;
+import com.ssafy.foody.common.dto.PageResponse;
 import com.ssafy.foody.food.domain.Food;
 import com.ssafy.foody.food.domain.UserFood;
 import com.ssafy.foody.food.mapper.FoodMapper;
 import com.ssafy.foody.report.domain.Meal;
 import com.ssafy.foody.report.domain.MealFood;
-import com.ssafy.foody.common.dto.PageResponse;
 import com.ssafy.foody.report.domain.Report;
 import com.ssafy.foody.report.dto.AiReportRequest;
 import com.ssafy.foody.report.dto.AiReportResponse;
-import com.ssafy.foody.report.dto.ReportRequest;
+import com.ssafy.foody.report.dto.ReportComment;
+import com.ssafy.foody.report.dto.ReportCommentRequest;
 import com.ssafy.foody.report.dto.ReportListResponse;
+import com.ssafy.foody.report.dto.ReportRequest;
 import com.ssafy.foody.report.dto.ReportResponse;
 import com.ssafy.foody.report.mapper.ReportMapper;
 import com.ssafy.foody.user.domain.StdInfo;
@@ -353,9 +355,9 @@ public class ReportServiceImpl implements ReportService {
 		// 현재 접속자가 '관리자(ROLE_ADMIN)'인지 확인
 		boolean isAdmin = authHelper.isAdmin();
 
-		// 내 레포트 또는 관리자인 지 확인 (IDOR 방지)
+		// 공유된 레포트가 아닐 때 내 레포트 또는 관리자인 지 확인 (IDOR 방지)
 		// IDOR (Insecure Direct Object References, 부적절한 인가)
-		if (!report.getUserId().equals(userId) && !isAdmin) {
+		if (!report.getIsShared() && !report.getUserId().equals(userId) && !isAdmin) {
 			throw new IllegalArgumentException("해당 레포트에 대한 접근 권한이 없습니다.");
 		}
 
@@ -380,6 +382,96 @@ public class ReportServiceImpl implements ReportService {
 
 		// 삭제 실행
 		reportMapper.deleteReport(reportId);
+	}
+
+	@Override
+	@Transactional
+	public void toggleShare(String userId, int reportId) {
+		// 레포트 소유자 확인
+		Report report = reportMapper.selectReportDetail(reportId);
+		if (report == null) {
+			throw new IllegalArgumentException("해당 레포트가 존재하지 않습니다.");
+		}
+		// 요청자 정보 조회 (권한 확인용)
+		User requestUser = userMapper.findById(userId);
+
+		// 본인 레포트가 아니고, 관리자도 아니라면 예외 발생
+		if (!report.getUserId().equals(userId) && !"ROLE_ADMIN".equals(requestUser.getRole())) {
+			throw new IllegalArgumentException("본인 레포트만 변경 가능합니다.");
+		}
+		
+		boolean nextStatus = !report.getIsShared();
+		reportMapper.updateIsShared(reportId, nextStatus);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public PageResponse<ReportResponse> getSharedReportList(int page) {
+		int offset = (page - 1) * LIST_LIMIT;
+		
+		List<Report> reports = reportMapper.selectSharedReports(offset, LIST_LIMIT);
+		int totalElements = reportMapper.selectSharedReportCount();
+		int totalPages = (int) Math.ceil((double) totalElements / LIST_LIMIT);
+		
+		List<ReportResponse> responseList = new ArrayList<>();
+		for (Report report : reports) {
+			responseList.add(convertToReportResponse(report));
+		}
+		
+		return PageResponse.<ReportResponse>builder()
+				.content(responseList)
+				.page(page)
+				.size(LIST_LIMIT)
+				.totalElements(totalElements)
+				.totalPages(totalPages)
+				.build();
+	}
+
+	@Override
+	@Transactional
+	public void addComment(String userId, ReportCommentRequest request) {
+		// 레포트 존재 및 공유 상태 확인
+		Report report = reportMapper.selectReportDetail(request.getReportId());
+		if (report == null) {
+			throw new IllegalArgumentException("해당 레포트가 존재하지 않습니다.");
+		}
+		if (!report.getIsShared()) {
+			throw new IllegalArgumentException("공유되지 않은 레포트에는 댓글을 달 수 없습니다.");
+		}
+		
+		ReportComment comment = ReportComment.builder()
+				.reportId(request.getReportId())
+				.author(userId)
+				.comment(request.getComment())
+				.build();
+				
+		reportMapper.insertComment(comment);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ReportComment> getComments(int reportId) {
+	    // 안전하게 공유된 것만 댓글 조회가 가능하도록
+	    Report report = reportMapper.selectReportDetail(reportId);
+	    if (report == null || !report.getIsShared()) {
+	         // 공유 취소되면 댓글도 안 보이게 
+	         return new ArrayList<>();
+	    }
+		return reportMapper.selectComments(reportId);
+	}
+
+	@Override
+	@Transactional
+	public void deleteComment(String userId, int commentId) {
+		String author = reportMapper.findCommentAuthorById(commentId);
+		if (author == null) {
+			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+		}
+		// 작성자 본인 또는 관리자만 삭제 가능
+		if (!author.equals(userId) && !authHelper.isAdmin()) {
+			throw new IllegalArgumentException("삭제 권한이 없습니다.");
+		}
+		reportMapper.deleteComment(commentId);
 	}
 
 	// 헬퍼 메서드: DB의 standard 문자열("100g", "200ml")에서 숫자만 추출
@@ -413,6 +505,7 @@ public class ReportServiceImpl implements ReportService {
 				.comment(report.getComment())
 				.characterId(report.getCharacterId())
 				.isWaited(report.getIsWaited())
+				.isShared(report.getIsShared())
 				.totalKcal(report.getTotalKcal())
 				.totalCarb(report.getTotalCarb())
 				.totalProtein(report.getTotalProtein())
@@ -532,6 +625,7 @@ public class ReportServiceImpl implements ReportService {
 				.comment(report.getComment())
 				.characterId(report.getCharacterId())
 				.isWaited(report.getIsWaited())
+				.isShared(report.getIsShared())
 				.totalKcal(report.getTotalKcal())
 				.totalCarb(report.getTotalCarb())
 				.totalProtein(report.getTotalProtein())

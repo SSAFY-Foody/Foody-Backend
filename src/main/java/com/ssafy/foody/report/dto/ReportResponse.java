@@ -23,6 +23,7 @@ public class ReportResponse {
     private String comment;
     private Integer characterId;
     private boolean isWaited;
+    private boolean isShared;
 
     // 하루 섭취 영양소 총합
     private Double totalKcal;
@@ -99,5 +100,13 @@ public class ReportResponse {
 
     public void setIsWaited(boolean isWaited) {
         this.isWaited = isWaited;
+    }
+    
+    public boolean getIsShared() {
+        return isShared;
+    }
+
+    public void setIsShared(boolean isShared) {
+        this.isShared = isShared;
     }
 }

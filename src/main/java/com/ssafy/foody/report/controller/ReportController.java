@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.foody.common.dto.PageResponse;
-import com.ssafy.foody.report.dto.ReportRequest;
+import com.ssafy.foody.report.dto.ReportComment;
+import com.ssafy.foody.report.dto.ReportCommentRequest;
 import com.ssafy.foody.report.dto.ReportListResponse;
+import com.ssafy.foody.report.dto.ReportRequest;
 import com.ssafy.foody.report.dto.ReportResponse;
 import com.ssafy.foody.report.service.ReportService;
 
@@ -95,6 +98,65 @@ public class ReportController {
         reportService.deleteReport(userId, reportId);
 
         return ResponseEntity.ok("레포트가 삭제되었습니다.");
+    }
+
+    /**
+     * 레포트 공유 토글
+     * PATCH /report/{id}/share
+     */
+    @PatchMapping("/{id}/share")
+    public ResponseEntity<String> toggleShare(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable int id) {
+        String userId = userDetails.getUsername();
+        reportService.toggleShare(userId, id);
+        return ResponseEntity.ok("공유 상태가 변경되었습니다.");
+    }
+
+    /**
+     * 공유된 레포트 목록 (커뮤니티)
+     * GET /report/shared?page=1
+     */
+    @GetMapping("/shared")
+    public ResponseEntity<PageResponse<ReportResponse>> getSharedReportList(
+            @RequestParam(defaultValue = "1") int page) {
+        return ResponseEntity.ok(reportService.getSharedReportList(page));
+    }
+
+    /**
+     * 댓글 작성
+     * POST /report/comment
+     */
+    @PostMapping("/comment")
+    public ResponseEntity<String> addComment(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid ReportCommentRequest request) {
+        String userId = userDetails.getUsername();
+        reportService.addComment(userId, request);
+        return ResponseEntity.ok("댓글이 등록되었습니다.");
+    }
+
+    /**
+     * 댓글 조회
+     * GET /report/{id}/comment
+     */
+    @GetMapping("/{id}/comment")
+    public ResponseEntity<List<ReportComment>> getComments(
+            @PathVariable int id) {
+        return ResponseEntity.ok(reportService.getComments(id));
+    }
+
+    /**
+     * 댓글 삭제
+     * DELETE /report/comment/{id}
+     */
+    @DeleteMapping("/comment/{id}")
+    public ResponseEntity<String> deleteComment(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable int id) {
+        String userId = userDetails.getUsername();
+        reportService.deleteComment(userId, id);
+        return ResponseEntity.ok("댓글이 삭제되었습니다.");
     }
 
 }

@@ -61,4 +61,25 @@ public interface ReportMapper {
 
     // 수정한 레포트 대기상태 변경 (is_waited = false)
     void toggleFalseWaitingStatus(int id);
+
+    // 공유 상태 변경
+    void updateIsShared(@Param("reportId") int reportId, @Param("isShared") boolean isShared);
+
+    // 공유된 레포트 목록 조회
+    List<Report> selectSharedReports(@Param("offset") int offset, @Param("limit") int limit);
+    
+    // 공유된 레포트 개수 조회
+    int selectSharedReportCount();
+
+    // 댓글 등록
+    void insertComment(com.ssafy.foody.report.dto.ReportComment comment);
+
+    // 댓글 조회
+    List<com.ssafy.foody.report.dto.ReportComment> selectComments(int reportId);
+
+    // 댓글 삭제
+    void deleteComment(int commentId);
+    
+    // 댓글 작성자 확인
+    String findCommentAuthorById(int commentId);
 }

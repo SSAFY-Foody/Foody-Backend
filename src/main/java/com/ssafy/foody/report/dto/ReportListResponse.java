@@ -21,6 +21,7 @@ public class ReportListResponse {
     private String comment;
     private Integer characterId;
     private Boolean isWaited;
+    private Boolean isShared;
 
     // 하루 섭취 영양소 총합
     private Double totalKcal;

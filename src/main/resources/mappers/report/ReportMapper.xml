@@ -10,6 +10,7 @@
         <result property="score" column="score"/>
         <result property="comment" column="comment"/>
         <result property="isWaited" column="is_waited"/>
+        <result property="isShared" column="is_shared"/>
         <result property="characterId" column="character_id"/>
         <result property="expertId" column="expert_id"/>
         <result property="expertName" column="expert_name"/>
@@ -87,6 +88,7 @@
         <result property="score" column="score"/>
         <result property="comment" column="comment"/>
         <result property="isWaited" column="is_waited"/>
+        <result property="isShared" column="is_shared"/>
         <result property="characterId" column="character_id"/>
         <result property="createdAt" column="created_at"/>
         <result property="totalKcal" column="total_kcal"/>
@@ -100,7 +102,7 @@
     <select id="selectReportList" resultMap="reportListMap">
         SELECT 
             id, 
-            user_id, score, comment, is_waited, character_id, created_at,
+            user_id, score, comment, is_waited, is_shared, character_id, created_at,
             total_kcal, total_carb_g, total_protein_g, 
             total_fat_g, total_sugar_g, total_natrium_g
         FROM reports
@@ -133,7 +135,7 @@
     
     <select id="selectReportDetail" resultMap="reportDetailMap">
         SELECT 
-            r.id AS report_id, r.user_id, r.expert_id, e.name AS expert_name, r.score, r.comment, r.is_waited, r.character_id, r.created_at,
+            r.id AS report_id, r.user_id, r.expert_id, e.name AS expert_name, r.score, r.comment, r.is_waited, r.is_shared, r.character_id, r.created_at,
             r.user_age, r.user_height, r.user_weight, r.user_gender, r.user_activity_level,
             u.is_diabetes AS user_is_diabetes,
             r.user_std_weight, r.user_std_kcal, r.user_std_carb_g, r.user_std_protein_g,
@@ -314,5 +316,51 @@
     	is_waited = false
     	WHERE id = #{id}
     </update>
+
+    <update id="updateIsShared">
+        UPDATE reports
+        SET is_shared = #{isShared}
+        WHERE id = #{reportId}
+    </update>
+
+    <select id="selectSharedReports" resultMap="reportListMap">
+        SELECT 
+            id, 
+            user_id, score, comment, is_waited, character_id, created_at,
+            total_kcal, total_carb_g, total_protein_g, 
+            total_fat_g, total_sugar_g, total_natrium_g
+        FROM reports
+        WHERE is_shared = true
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <select id="selectSharedReportCount" resultType="int">
+        SELECT COUNT(*)
+        FROM reports
+        WHERE is_shared = true
+    </select>
+
+    <insert id="insertComment">
+        INSERT INTO report_comments (report_id, author, comment)
+        VALUES (#{reportId}, #{author}, #{comment})
+    </insert>
+
+    <select id="selectComments" resultType="com.ssafy.foody.report.dto.ReportComment">
+        SELECT id, report_id as reportId, author, comment, created_at as createdAt
+        FROM report_comments
+        WHERE report_id = #{reportId}
+        ORDER BY created_at ASC
+    </select>
+
+    <delete id="deleteComment">
+        DELETE FROM report_comments WHERE id = #{id}
+    </delete>
+    
+    <select id="findCommentAuthorById" resultType="string">
+        SELECT author
+        FROM report_comments
+        WHERE id = #{id}
+    </select>
 
 </mapper>
