@@ -1,6 +1,7 @@
 package com.ssafy.foody.report.service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -472,6 +473,19 @@ public class ReportServiceImpl implements ReportService {
 			throw new IllegalArgumentException("삭제 권한이 없습니다.");
 		}
 		reportMapper.deleteComment(commentId);
+		reportMapper.deleteComment(commentId);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public String getReportCreatedAt(int reportId) {
+		Report report = reportMapper.selectReportDetail(reportId);
+		if (report == null) {
+			return "";
+		}
+		// 포맷팅: 12월 23일
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M월 d일");
+		return report.getCreatedAt().format(formatter);
 	}
 
 	// 헬퍼 메서드: DB의 standard 문자열("100g", "200ml")에서 숫자만 추출

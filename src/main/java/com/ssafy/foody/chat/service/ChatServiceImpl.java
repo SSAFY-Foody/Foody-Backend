@@ -62,4 +62,10 @@ public class ChatServiceImpl implements ChatService {
         chatMapper.deleteChatMessages(roomId);
         chatMapper.deleteChatRoom(roomId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ChatRoom getChatRoom(String roomId) {
+        return chatMapper.findChatRoomById(roomId);
+    }
 }

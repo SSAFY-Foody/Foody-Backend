@@ -1,7 +1,11 @@
 package com.ssafy.foody.chat.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -22,12 +26,14 @@ import com.ssafy.foody.chat.domain.ChatRoom;
 import com.ssafy.foody.chat.dto.ChatRoomRequest;
 import com.ssafy.foody.chat.dto.ChatRoomResponse;
 import com.ssafy.foody.chat.service.ChatService;
+import com.ssafy.foody.report.service.ReportService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/chat")
@@ -35,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ReportService reportService;
 
     // 채팅방 만들기 (채팅 요청)
     @Operation(summary = "채팅방 생성", description = "새로운 1:1 채팅방을 생성합니다.")
@@ -67,6 +74,44 @@ public class ChatController {
     public void sendMessage(ChatMessage message) {
         chatService.saveMessage(message);
         messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+
+        // 알림 전송 로직
+        try {
+            ChatRoom room = chatService.getChatRoom(message.getRoomId());
+            if (room != null) {
+                String recipientId;
+                // 메시지 보낸 사람이 userId면 -> recipient는 expertId
+                // 메시지 보낸 사람이 expertId면 -> recipient는 userId
+                if (message.getSenderId().equals(room.getUserId())) {
+                    recipientId = room.getExpertId();
+                } else {
+                    recipientId = room.getUserId();
+                }
+
+                // 알림 페이로드 구성
+                Map<String, Object> notificationPayload = new HashMap<>();
+                notificationPayload.put("message", message.getMessage());
+                notificationPayload.put("senderId", message.getSenderId());
+                notificationPayload.put("roomId", message.getRoomId());
+                notificationPayload.put("sentAt", message.getSentAt());
+                
+                // 레포트 생성 날짜 추가
+                if (room.getReportId() != null) {
+                    try {
+                        String reportDate = reportService.getReportCreatedAt(room.getReportId().intValue());
+                        notificationPayload.put("reportDate", reportDate);
+                    } catch (Exception e) {
+                        log.error("Error: " + e.getMessage());
+                    }
+                } else {
+                    log.error("Error: room.getReportId() is null for roomId: " + room.getId());
+                }
+
+                messagingTemplate.convertAndSend("/sub/notification/" + recipientId, notificationPayload);
+            }
+        } catch (Exception e) {
+            log.error("Error: " + e.getMessage());
+        }
     }
 
     // 채팅방 삭제 (종료)
