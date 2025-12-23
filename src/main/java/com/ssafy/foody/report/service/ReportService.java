@@ -38,4 +38,7 @@ public interface ReportService {
 
     // 댓글 삭제
     void deleteComment(String userId, int commentId);
+    
+    // 레포트 생성 날짜 조회 (알림용)
+    String getReportCreatedAt(int reportId);
 }

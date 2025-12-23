@@ -16,4 +16,6 @@ public interface ChatService {
 	public List<ChatRoomResponse> getChatRooms(String expertId);
 
 	public void deleteChatRoom(String roomId);
+
+	public ChatRoom getChatRoom(String roomId);
 }

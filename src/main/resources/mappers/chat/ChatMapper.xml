@@ -5,6 +5,7 @@
 
     <resultMap id="ChatRoomMap" type="ChatRoom">
         <id property="id" column="id"/>
+        <result property="reportId" column="report_id"/>
         <result property="userId" column="user_id"/>
         <result property="expertId" column="expert_id"/>
         <result property="createdAt" column="created_at"/>
@@ -30,7 +31,7 @@
     </select>
     
     <select id="findChatRoomById" resultMap="ChatRoomMap">
-        SELECT id, user_id, expert_id, created_at
+        SELECT id, report_id, user_id, expert_id, created_at
         FROM chat_rooms
         WHERE id = #{roomId}
     </select>
@@ -47,7 +48,7 @@
         ORDER BY sent_at ASC
     </select>
 
-    <select id="findChatRoomsByExpertId" resultType="com.ssafy.foody.chat.dto.ChatRoomResponse">
+    <select id="findChatRoomsByExpertId" resultType="ChatRoomResponse">
         SELECT 
             r.id, 
             r.report_id AS reportId,
