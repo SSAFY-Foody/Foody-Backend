@@ -1,7 +1,5 @@
 package com.ssafy.foody.chat.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
