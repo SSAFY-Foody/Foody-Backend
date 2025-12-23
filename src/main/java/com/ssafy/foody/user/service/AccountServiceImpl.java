@@ -50,7 +50,7 @@ public class AccountServiceImpl implements AccountService {
                 .weight(request.getWeight())
                 .gender(request.getGender())
                 .activityLevel(request.getActivityLevel())
-                .isDiabetes(request.isDiabetes())
+                .isDiabetes(request.getIsDiabetes() != null ? request.getIsDiabetes() : false)
                 
                 .role("ROLE_USER")      // 기본 역할
                 .provider(null)         // 일반 가입이므로 null

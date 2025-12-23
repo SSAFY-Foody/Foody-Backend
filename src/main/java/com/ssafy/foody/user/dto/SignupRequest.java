@@ -14,6 +14,7 @@ public class SignupRequest {
 
 	@NotBlank(message = "아이디는 필수 입력 값입니다.")
 	@Size(min = 4, max = 20, message = "아이디는 4~20자 사이여야 합니다.")
+	@Pattern(regexp = "^[a-zA-Z0-9]+$", message = "아이디는 영문과 숫자만 사용 가능합니다.")
 	private String id; // 사용자 ID (PK)
 
 	@NotBlank(message = "비밀번호는 필수 입력 값입니다.")
@@ -44,5 +45,5 @@ public class SignupRequest {
 	@Max(value = 5, message = "활동량 레벨은 최대 5이어야 합니다.")
 	private int activityLevel;
 
-	private boolean isDiabetes; // 당뇨 여부 (boolean은 true/false라 유효성 검사 불필요)
+	private Boolean isDiabetes; // 당뇨 여부 (boolean은 true/false라 유효성 검사 불필요)
 }
